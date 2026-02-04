@@ -1,0 +1,47 @@
+# Large sequence files
+*.fasta
+*.fa
+*.fna
+*.fastq
+*.fq
+*.newick
+*.nwk
+*.treefile
+*.tree
+*.jplace
+*.json
+
+# Data files
+*.csv
+*.tsv
+*.txt
+*.dat
+
+# EXCEPT examples
+!*_example.csv
+!*_example.tsv
+!template/*.csv
+
+# RAxML outputs
+*.raxml.*
+RAxML_*
+
+# EPA-ng/gappa outputs
+epa_results/
+gappa_output/
+
+# Python
+__pycache__/
+*.py[cod]
+.Python
+venv/
+
+# System files
+.DS_Store
+*.log
+
+# Input data (too large)
+families/*/data/input/
+
+# Allow .gitkeep files
+!**/.gitkeep
