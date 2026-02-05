@@ -1,7 +1,5 @@
 # BIOSCAN Phylogenetics
 
-> Integrates UK BIOSCAN specimens with [BGE Project](https://github.com/bge-barcoding/bold-library-curation) reference phylogenies
-
 Workflow for integrating UK BIOSCAN arthropod specimens with European reference phylogenies using EPA-ng (Evolutionary Placement Algorithm).
 
 ## Overview
@@ -22,6 +20,8 @@ This project places UK BIOSCAN specimens onto expert-curated European reference 
 
 ### In Progress
 
+- [ ] Chironomidae
+- [ ] Tipulidae
 - [ ] Other Diptera families
 
 ## Methodology
@@ -41,42 +41,6 @@ This project places UK BIOSCAN specimens onto expert-curated European reference 
 - **Confidence**: Provides LWR scores (placement reliability)
 - **Scalability**: Easy to add new specimens as they're sequenced
 - **Comparability**: All families use same reference framework
-
-## Reference Trees
-
-### Source
-
-Reference phylogenies are curated by the **Biodiversity Genomics Europe (BGE)** project:
-- **GitHub**: https://github.com/bge-barcoding/bold-library-curation
-- **Workflow Documentation**: [BGE README](https://github.com/bge-barcoding/bold-library-curation/blob/main/workflow/README.md)
-- **Contact**: See BGE repository
-
-### Tree Construction (Summary)
-
-BGE reference trees use:
-- **Sequences**: Downloaded from BOLD database, quality filtered
-- **Alignment**: MAFFT (--auto strategy)
-- **Phylogenetic inference**: 
-  - IQ-TREE2 with ModelFinder
-  - 1000 ultrafast bootstrap replicates
-  - SH-aLRT branch support
-- **Node support**: 
-  - Values at nodes represent **ultrafast bootstrap support** (0-100)
-  - ≥95: Very strong support
-  - 80-95: Strong support
-  - 70-80: Moderate support
-  - <70: Weak support
-
-### BAGS Quality Grades
-
-Each BIN is assigned a quality grade based on concordance analysis:
-- **Grade A**: Single BIN, single species, monophyletic (high quality)
-- **Grade B**: Single BIN, single species, paraphyletic (sampling gaps)
-- **Grade C**: Multiple BINs, single species (potential cryptic species)
-- **Grade D**: Single BIN, single species, conflicts with other data
-- **Grade E**: Single BIN, multiple species (recent divergence)
-
-**See** [`docs/reference_trees.md`](docs/reference_trees.md) for complete BGE methodology.
 
 ## Requirements
 
@@ -105,29 +69,20 @@ See `families/Sciaridae/README.md` for detailed example.
 ```
 bioscan-phylogenetics/
 ├── README.md
-├── docs/
-│   ├── reference_trees.md    # BGE methodology details
-│   └── workflow_overview.md  # Detailed workflow
-├── scripts/                  # Analysis scripts
+├── docs/                    # Detailed documentation
+├── scripts/                 # Analysis scripts
 ├── families/
-│   ├── Sciaridae/           # Completed analysis
-│   └── template/            # Template for new families
+│   ├── Sciaridae/          # Completed analysis
+│   └── template/           # Template for new families
 └── .gitignore
 ```
 
 ## Citation
 
-### This Workflow
 If using this workflow, please cite:
 - EPA-ng: Barbera et al. (2019) Syst Biol 68(2):365-369
 - RAxML-ng: Kozlov et al. (2019) Bioinformatics 35(21):4453-4455
 - gappa: Czech & Stamatakis (2019) Bioinformatics 35(16):2906-2907
-
-### BGE Reference Trees
-When using BGE reference trees, please cite:
-- BGE Project: https://github.com/bge-barcoding/bold-library-curation
-- IQ-TREE2: Minh et al. (2020) Mol Biol Evol 37(5):1530-1534
-- MAFFT: Katoh & Standley (2013) Mol Biol Evol 30(4):772-780
 
 ## Contact
 
