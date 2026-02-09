@@ -23,8 +23,24 @@ def select_representatives(bioscan_file, tree_file, output_fasta):
     bioscan['n_ambiguous'] = bioscan['bold_nuc'].fillna('').str.count('N')
     bioscan['quality_score'] = bioscan['seq_length'] - (bioscan['n_ambiguous'] * 10)
     
-    # Select best sequence per BIN
-    representatives = bioscan.sort_values(
+    # Extract process IDs from reference tree to exclude
+    print(f"Loading reference tree: {tree_file}")
+    with open(tree_file, 'r') as f:
+        tree_content = f.read()
+    
+    # Extract all process IDs from reference tree
+    import re
+    ref_tree_pattern = r'\|([A-Z0-9-]+\-\d+)'
+    ref_processids = set(re.findall(ref_tree_pattern, tree_content))
+    print(f"Reference tree contains {len(ref_processids)} specimens")
+    
+    # Exclude reference tree specimens from selection
+    bioscan_filtered = bioscan[~bioscan['bold_processid'].isin(ref_processids)]
+    excluded_count = len(bioscan) - len(bioscan_filtered)
+    print(f"Excluded {excluded_count} specimens already in reference tree")
+    
+    # Select best sequence per BIN from filtered data
+    representatives = bioscan_filtered.sort_values(
         'quality_score', ascending=False
     ).groupby('bold_bin_uri').first().reset_index()
     
