@@ -13,7 +13,7 @@ print("=" * 60)
 
 # 1. Load existing metadata
 print("\n1. Loading existing metadata...")
-metadata = pd.read_csv('data/output/sciaridae_taxonium_metadata_fullplacement.tsv', sep='\t')
+metadata = pd.read_csv('data/output/sciaridae_metadata_enhanced.tsv', sep='\t')
 print(f"   Loaded {len(metadata):,} rows")
 
 # 2. Load BOLD country data
@@ -80,7 +80,7 @@ final_columns = [
     'name',
     'bin',
     'species',
-    'process_id',
+    'processid',
     'category',
     'geography',
     'in_uksi',
@@ -101,7 +101,7 @@ final_columns = [col for col in final_columns if col in metadata.columns]
 metadata_final = metadata[final_columns]
 
 # 9. Save final metadata
-output_file = 'data/output/sciaridae_taxonium_metadata_final.tsv'
+output_file = 'data/output/sciaridae_taxonium_metadata_COMPLETE.tsv'
 metadata_final.to_csv(output_file, sep='\t', index=False)
 
 print("\n" + "=" * 60)

@@ -1,0 +1,55 @@
+# Large data files
+*.fasta
+*.fa
+*.fastq
+*.bam
+*.sam
+
+# Large output files
+*.newick
+*.nwk
+*.jplace
+*.gz
+*.zip
+
+# Directories with large files
+data/output/
+data/queries/
+epa_results/
+gappa_output/
+
+# Keep reference files (small)
+!data/reference/*.fasta
+!data/reference/*.treefile
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+
+# R
+.Rhistory
+.RData
+.Rproj.user
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Keep important small files
+!*.md
+!*.json
+!*.py
+!*.sh
+!*.R
