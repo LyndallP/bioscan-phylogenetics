@@ -1,0 +1,5 @@
+category	meaning
+BIOSCAN_collected	Species on UKSI list + collected by BIOSCAN UK
+UKSI_no_specimens	Species on UKSI list but no BIOSCAN specimens (reference data only)
+Not_in_UKSI	Has specimens but species NOT on UKSI - needs verification (could be: new UK record, misID, non-native, vagrant)
+Europe_reference	European reference specimen, species not expected in UK
