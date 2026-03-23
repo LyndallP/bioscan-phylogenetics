@@ -4,14 +4,19 @@ Add categorical bootstrap support column for easier Taxonium searching
 Since Taxonium doesn't support > < operators, we create text categories
 """
 
+import sys
 import pandas as pd
+
+if len(sys.argv) != 3:
+    print(f"Usage: {sys.argv[0]} <input_metadata.tsv> <output_metadata.tsv>")
+    sys.exit(1)
 
 print("=" * 80)
 print("ADDING CATEGORICAL BOOTSTRAP SUPPORT COLUMN")
 print("=" * 80)
 
 # Load metadata
-df = pd.read_csv('/mnt/user-data/uploads/sciaridae_metadata_FINAL_WITH_IMAGES.tsv', sep='\t')
+df = pd.read_csv(sys.argv[1], sep='\t')
 print(f"\nLoaded {len(df):,} specimens")
 
 # ============================================================================
@@ -80,7 +85,7 @@ print("  ✓ bootstrap_support placed after parent_bootstrap")
 # SAVE FINAL METADATA
 # ============================================================================
 
-output_file = '/mnt/user-data/outputs/sciaridae_metadata_WITH_BOOTSTRAP_CATEGORIES.tsv'
+output_file = sys.argv[2]
 df.to_csv(output_file, sep='\t', index=False)
 
 print("\n" + "=" * 80)

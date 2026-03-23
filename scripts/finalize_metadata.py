@@ -8,14 +8,19 @@ Final metadata updates:
    - Moderate to Low (0-0.74)
 """
 
+import sys
 import pandas as pd
+
+if len(sys.argv) != 3:
+    print(f"Usage: {sys.argv[0]} <input_metadata.tsv> <output_metadata.tsv>")
+    sys.exit(1)
 
 print("=" * 80)
 print("UPDATING NODE SUPPORT CATEGORIES")
 print("=" * 80)
 
 # Load metadata
-df = pd.read_csv('/mnt/user-data/outputs/sciaridae_metadata_FINAL_COMPLETE.tsv', sep='\t')
+df = pd.read_csv(sys.argv[1], sep='\t')
 print(f"\nLoaded {len(df):,} specimens")
 print(f"Current columns: {len(df.columns)}")
 
@@ -108,7 +113,7 @@ print(f"\n  Final column count: {len(df.columns)}")
 # SAVE FINAL METADATA
 # ============================================================================
 
-output_file = '/mnt/user-data/outputs/sciaridae_metadata_FINAL_UPLOAD.tsv'
+output_file = sys.argv[2]
 df.to_csv(output_file, sep='\t', index=False)
 
 print("\n" + "=" * 80)

@@ -4,8 +4,13 @@ Restore missing metadata for BIOSCAN specimens by extracting BIN from tip names
 and matching against specimens with complete metadata
 """
 
+import sys
 import pandas as pd
 import re
+
+if len(sys.argv) != 3:
+    print(f"Usage: {sys.argv[0]} <input_metadata.tsv> <output_metadata.tsv>")
+    sys.exit(1)
 
 print("=" * 80)
 print("RESTORING MISSING BIOSCAN METADATA")
@@ -13,7 +18,7 @@ print("=" * 80)
 
 # Load current metadata
 print("\n1. Loading current metadata...")
-df = pd.read_csv('/mnt/project/sciaridae_metadata_UPLOAD.tsv', sep='\t')
+df = pd.read_csv(sys.argv[1], sep='\t')
 print(f"   Total rows: {len(df):,}")
 
 # Find BIOSCAN specimens with missing metadata
@@ -105,7 +110,7 @@ bioscan_complete = (df['dataset'] == 'BIOSCAN') & (df['bin'].notna()) & (df['bin
 print(f"   BIOSCAN specimens with complete BIN: {bioscan_complete.sum():,}")
 
 # Save restored metadata
-output_file = '/mnt/project/sciaridae_metadata_RESTORED.tsv'
+output_file = sys.argv[2]
 df.to_csv(output_file, sep='\t', index=False)
 
 print("\n" + "=" * 80)

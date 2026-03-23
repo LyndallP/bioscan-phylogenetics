@@ -3,15 +3,20 @@
 Verification report for restored Sciaridae metadata
 """
 
+import sys
 import pandas as pd
 import numpy as np
 
+if len(sys.argv) != 2:
+    print(f"Usage: {sys.argv[0]} <metadata.tsv>")
+    sys.exit(1)
+
 print("=" * 80)
-print("SCIARIDAE METADATA RESTORATION - VERIFICATION REPORT")
+print("METADATA RESTORATION - VERIFICATION REPORT")
 print("=" * 80)
 
 # Load final metadata
-df = pd.read_csv('/mnt/project/sciaridae_metadata_FINAL.tsv', sep='\t')
+df = pd.read_csv(sys.argv[1], sep='\t')
 
 print(f"\n{'='*80}")
 print("OVERALL STATISTICS")
@@ -126,6 +131,5 @@ for idx, row in restored_examples.iterrows():
 print(f"\n{'='*80}")
 print("RESTORATION COMPLETE")
 print("=" * 80)
-print(f"\nFinal metadata saved to: /mnt/project/sciaridae_metadata_FINAL.tsv")
-print(f"All 346 BIOSCAN specimens now have complete metadata!")
+print(f"\nMetadata file: {sys.argv[1]}")
 print("=" * 80 + "\n")

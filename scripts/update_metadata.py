@@ -8,11 +8,16 @@ Update Sciaridae metadata with:
 5. Add geography_broad biogeographic regions
 """
 
+import sys
 import pandas as pd
+
+if len(sys.argv) != 3:
+    print(f"Usage: {sys.argv[0]} <input_metadata.tsv> <output_metadata.tsv>")
+    sys.exit(1)
 
 # Load metadata
 print("Loading metadata...")
-df = pd.read_csv('sciaridae_metadata_WITH_SUBFAMILY.tsv', sep='\t')
+df = pd.read_csv(sys.argv[1], sep='\t')
 print(f"Loaded {len(df)} specimens")
 
 # ============================================================================
@@ -227,7 +232,7 @@ columns.insert(bins_idx + 1, 'bin_status')
 
 df = df[columns]
 
-output_file = 'sciaridae_metadata_UPDATED.tsv'
+output_file = sys.argv[2]
 df.to_csv(output_file, sep='\t', index=False)
 
 print(f"✅ Saved to: {output_file}")

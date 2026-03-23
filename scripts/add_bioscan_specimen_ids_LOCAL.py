@@ -7,8 +7,13 @@ Usage:
   python3 add_bioscan_specimen_ids_LOCAL.py
 """
 
+import sys
 import pandas as pd
 import os
+
+if len(sys.argv) != 4:
+    print(f"Usage: {sys.argv[0]} <bioscan_data.tsv> <input_metadata.tsv> <output_metadata.tsv>")
+    sys.exit(1)
 
 print("=" * 80)
 print("ADDING BIOSCAN SPECIMEN IDs AND IMAGE URLs")
@@ -19,7 +24,7 @@ print("=" * 80)
 # ============================================================================
 
 print("\n1. Loading original BIOSCAN data...")
-bioscan_file = '/Users/lp20/Desktop/Taxonium/UKBOL_bioscan_selected.tsv'
+bioscan_file = sys.argv[1]
 
 try:
     bioscan_data = pd.read_csv(bioscan_file, sep='\t')
@@ -54,26 +59,7 @@ except Exception as e:
 
 print("\n2. Loading current metadata...")
 
-# Try to find the metadata file
-possible_locations = [
-    os.path.expanduser('~/Downloads/sciaridae_metadata_FINAL_v3.tsv'),
-    os.path.expanduser('~/Downloads/sciaridae_metadata_WITH_IMAGES.tsv'),
-    'sciaridae_metadata_FINAL_v3.tsv',
-]
-
-metadata_file = None
-for path in possible_locations:
-    if os.path.exists(path):
-        metadata_file = path
-        break
-
-if not metadata_file:
-    print(f"\n   ERROR: Could not find metadata file in:")
-    for path in possible_locations:
-        print(f"     - {path}")
-    print(f"\n   Please download the metadata file to your Downloads folder")
-    exit(1)
-
+metadata_file = sys.argv[2]
 df = pd.read_csv(metadata_file, sep='\t')
 print(f"   ✓ Loaded {len(df):,} specimens from {os.path.basename(metadata_file)}")
 
@@ -168,7 +154,7 @@ print("   ✓ Reordered columns")
 # 6. SAVE FINAL METADATA
 # ============================================================================
 
-output_file = os.path.expanduser('~/Downloads/sciaridae_metadata_FINAL_WITH_IMAGES.tsv')
+output_file = sys.argv[3]
 df.to_csv(output_file, sep='\t', index=False)
 
 print("\n" + "=" * 80)
@@ -214,7 +200,7 @@ else:
 print("\n" + "=" * 80)
 print("NEXT STEPS")
 print("=" * 80)
-print("\n1. File saved to: ~/Downloads/sciaridae_metadata_FINAL_WITH_IMAGES.tsv")
+print(f"\n1. File saved to: {output_file}")
 print("2. Upload this file to Taxonium along with your tree")
 print("3. Taxonium will display thumbnails from the ThumbnailURL column")
 print("\n✓ Done!")

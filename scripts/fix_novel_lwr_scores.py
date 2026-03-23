@@ -10,19 +10,24 @@ differs from the metadata:
 We match by BOLD ID and update the epa_lwr_score column.
 """
 
+import sys
 import pandas as pd
 import json
+
+if len(sys.argv) != 4:
+    print(f"Usage: {sys.argv[0]} <input_metadata.tsv> <epa_result.jplace> <output_metadata.tsv>")
+    sys.exit(1)
 
 print("=" * 80)
 print("FIXING NOVEL PLACEMENT LWR SCORES")
 print("=" * 80)
 
 # Load metadata
-df = pd.read_csv('/mnt/user-data/outputs/sciaridae_metadata_UPDATED.tsv', sep='\t')
+df = pd.read_csv(sys.argv[1], sep='\t')
 print(f"\nLoaded {len(df):,} specimens")
 
 # Load jplace file
-with open('/mnt/user-data/uploads/epa_result.jplace', 'r') as f:
+with open(sys.argv[2], 'r') as f:
     jplace_data = json.load(f)
 
 # Extract LWR scores
@@ -147,7 +152,7 @@ print("✅ Updated placement interpretations for Novel specimens")
 # Remove temporary bold_id column
 df = df.drop(columns=['bold_id'])
 
-output_file = '/mnt/user-data/outputs/sciaridae_metadata_FIXED_LWR.tsv'
+output_file = sys.argv[3]
 df.to_csv(output_file, sep='\t', index=False)
 
 print("\n" + "=" * 80)

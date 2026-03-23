@@ -4,15 +4,20 @@ Add BOLD BIOSCAN Specimens link to metadata
 Links to all BIOSCAN specimens within a BIN from Wellcome Sanger Institute
 """
 
+import sys
 import pandas as pd
 import urllib.parse
+
+if len(sys.argv) != 3:
+    print(f"Usage: {sys.argv[0]} <input_metadata.tsv> <output_metadata.tsv>")
+    sys.exit(1)
 
 print("=" * 80)
 print("ADDING BOLD BIOSCAN SPECIMENS LINK")
 print("=" * 80)
 
 # Load metadata
-df = pd.read_csv('/mnt/project/sciaridae_metadata_UPLOAD.tsv', sep='\t')
+df = pd.read_csv(sys.argv[1], sep='\t')
 print(f"\nLoaded {len(df):,} specimens")
 
 def make_markdown_link(url, text):
@@ -57,7 +62,7 @@ if 'BOLD_Specimen' in df.columns:
     print("Inserted BOLD_BIOSCAN column after BOLD_Specimen")
 
 # Save
-output_file = '/mnt/user-data/outputs/sciaridae_metadata_with_bioscan_link.tsv'
+output_file = sys.argv[2]
 df.to_csv(output_file, sep='\t', index=False)
 
 print("\n" + "=" * 80)

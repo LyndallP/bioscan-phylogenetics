@@ -7,14 +7,19 @@ Create unified "Node support / Placement" column combining:
 This gives every specimen a searchable support category!
 """
 
+import sys
 import pandas as pd
+
+if len(sys.argv) != 3:
+    print(f"Usage: {sys.argv[0]} <input_metadata.tsv> <output_metadata.tsv>")
+    sys.exit(1)
 
 print("=" * 80)
 print("CREATING UNIFIED NODE SUPPORT / PLACEMENT COLUMN")
 print("=" * 80)
 
 # Load metadata
-df = pd.read_csv('/mnt/user-data/outputs/sciaridae_metadata_WITH_BOOTSTRAP_CATEGORIES.tsv', sep='\t')
+df = pd.read_csv(sys.argv[1], sep='\t')
 print(f"\nLoaded {len(df):,} specimens")
 
 # ============================================================================
@@ -120,7 +125,7 @@ print("  ✓ 'Node support / Placement' column added")
 # SAVE FINAL METADATA
 # ============================================================================
 
-output_file = '/mnt/user-data/outputs/sciaridae_metadata_FINAL_COMPLETE.tsv'
+output_file = sys.argv[2]
 df.to_csv(output_file, sep='\t', index=False)
 
 print("\n" + "=" * 80)
