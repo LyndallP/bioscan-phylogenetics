@@ -1,16 +1,21 @@
 #!/usr/bin/env python3
 """Create metadata from final tree with EPA-ng placement info"""
 
+import sys
 import pandas as pd
 import json
 from Bio import Phylo
 
+if len(sys.argv) != 4:
+    print(f"Usage: {sys.argv[0]} <tree.newick> <epa_result.jplace> <output.tsv>")
+    sys.exit(1)
+
 # Load tree
-tree = Phylo.read('data/output/sciaridae_FINAL.newick', 'newick')
+tree = Phylo.read(sys.argv[1], 'newick')
 tree_tips = {t.name: t for t in tree.get_terminals()}
 
 # Load jplace for EPA scores
-with open('epa_final/epa_result.jplace', 'r') as f:
+with open(sys.argv[2], 'r') as f:
     jplace = json.load(f)
 
 # Create placement lookup - CONVERT SPACES TO UNDERSCORES!
@@ -24,6 +29,16 @@ for placement in jplace['placements']:
         placement_scores[name_fixed] = lwr
 
 print(f"Loaded {len(placement_scores)} placement scores")
+
+# Build set of BINs present in reference tree tips (not placed queries)
+# Used to distinguish 'validation' (BIN already in tree) from 'novel' (new BIN)
+reference_bins = set()
+for tip_name in tree_tips:
+    if tip_name not in placement_scores:
+        parts = tip_name.split('|')
+        if len(parts) >= 2:
+            candidate = parts[0] if parts[0].startswith('BOLD') else parts[1]
+            reference_bins.add(candidate)
 
 # Create metadata
 metadata = []
@@ -57,19 +72,20 @@ for name in tree_tips:
             row['species'] = parts[0].replace('_', ' ')
             row['bin'] = parts[1]
         
-        # Check if placed query or reference
+        # Check if placed query or reference tree sequence
         if name in placement_scores:
-            row['placement_type'] = 'bioscan'
+            bin_val = row.get('bin', '')
+            row['placement_type'] = 'validation' if bin_val in reference_bins else 'novel'
             lwr = placement_scores[name]
             row['epa_lwr_score'] = lwr
-            if lwr >= 0.75:
+            if lwr >= 0.90:
                 row['placement_quality'] = 'High'
-            elif lwr >= 0.5:
-                row['placement_quality'] = 'Medium'
+            elif lwr >= 0.75:
+                row['placement_quality'] = 'Good'
             else:
-                row['placement_quality'] = 'Low'
+                row['placement_quality'] = 'Moderate to Low'
         else:
-            row['placement_type'] = 'reference'
+            row['placement_type'] = 'reference_tree'
             row['epa_lwr_score'] = ''
             row['placement_quality'] = ''
         
@@ -100,9 +116,10 @@ columns = ['name', 'bin', 'species', 'category', 'geography', 'placement_type',
 df = df[columns]
 
 # Save
-df.to_csv('data/output/sciaridae_basic_metadata.tsv', sep='\t', index=False)
+df.to_csv(sys.argv[3], sep='\t', index=False)
 print(f"✓ Created basic metadata: {len(df)} rows")
-print(f"  Reference: {(df['placement_type'] == 'reference').sum()}")
-print(f"  BIOSCAN: {(df['placement_type'] == 'bioscan').sum()}")
+print(f"  Reference tree: {(df['placement_type'] == 'reference_tree').sum()}")
+print(f"  Validation (BIN in tree): {(df['placement_type'] == 'validation').sum()}")
+print(f"  Novel (new BIN): {(df['placement_type'] == 'novel').sum()}")
 print(f"  DTOL: {(df['placement_type'] == 'dtol').sum()}")
 print(f"  Polytomy: {(df['placement_type'] == 'polytomy').sum()}")
