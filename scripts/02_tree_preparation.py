@@ -1,7 +1,15 @@
+import sys
 from ete3 import Tree
 
+if len(sys.argv) != 3:
+    print(f"Usage: {sys.argv[0]} <input.treefile> <output.treefile>")
+    sys.exit(1)
+
+input_tree = sys.argv[1]
+output_tree = sys.argv[2]
+
 # Load tree
-tree = Tree("Sciaridae.treefile", format=1)
+tree = Tree(input_tree, format=1)
 
 # Get all tip names
 all_tips = [leaf.name for leaf in tree]
@@ -19,5 +27,5 @@ tree.prune([tip for tip in all_tips if not tip.startswith("OUTGROUP")])
 print(f"\nPruned tree: {len(tree)} tips")
 
 # Save pruned tree
-tree.write(format=1, outfile="Sciaridae_ingroup.treefile")
-print("\nSaved to: Sciaridae_ingroup.treefile")
+tree.write(format=1, outfile=output_tree)
+print(f"\nSaved to: {output_tree}")

@@ -10,20 +10,28 @@ Complete workflow:
 5. Create metadata
 """
 
+import argparse
 import pandas as pd
 import os
 import subprocess
 from Bio import SeqIO
+
+parser = argparse.ArgumentParser(description="Add DTOL specimens to Sciaridae phylogenetic tree")
+parser.add_argument("--dtol-metadata", required=True, help="DTOL metadata Excel file (tolid_sciaridae_portal.xlsx)")
+parser.add_argument("--barcodes-dir", required=True, help="Directory containing DTOL barcode FASTA files")
+parser.add_argument("--ref-alignment", required=True, help="Reference alignment FASTA (Sciaridae_aligned_clean.fasta)")
+parser.add_argument("--ref-tree", required=True, help="Reference tree file (Sciaridae.treefile)")
+args = parser.parse_args()
 
 print("=" * 70)
 print("ADDING DTOL SPECIMENS TO SCIARIDAE TREE")
 print("=" * 70)
 
 # Paths
-DTOL_METADATA = '/Users/lp20/Desktop/Taxonium/tolid_sciaridae_portal.xlsx'
-DTOL_BARCODES_DIR = '/Users/lp20/Desktop/Taxonium/DTOL_barcodes'
-REFERENCE_ALIGNMENT = '/Users/lp20/Desktop/Taxonium/phylogenies/Sciaridae/Sciaridae_aligned_clean.fasta'
-REFERENCE_TREE = '/Users/lp20/Desktop/Taxonium/phylogenies/Sciaridae/Sciaridae.treefile'
+DTOL_METADATA = args.dtol_metadata
+DTOL_BARCODES_DIR = args.barcodes_dir
+REFERENCE_ALIGNMENT = args.ref_alignment
+REFERENCE_TREE = args.ref_tree
 
 # Output files
 DTOL_FASTA_RAW = 'data/output/dtol_sciaridae_raw.fasta'

@@ -1,31 +1,39 @@
 #!/usr/bin/env python3
 """
-Integrate BOLD country data into Sciaridae metadata.
+Integrate BOLD country data into placement metadata.
 Adds geography and in_uksi columns to existing metadata.
 """
 
+import argparse
 import pandas as pd
 import re
 
+parser = argparse.ArgumentParser(description="Integrate BOLD country data into placement metadata")
+parser.add_argument("--metadata", required=True, help="Input metadata TSV (from add_enhanced_metadata.py)")
+parser.add_argument("--bold-countries", required=True, help="BOLD countries TSV (from fetch_bold_countries.R)")
+parser.add_argument("--uksi", required=True, help="UKSI species list TSV (column: species)")
+parser.add_argument("--output", required=True, help="Output metadata TSV")
+args = parser.parse_args()
+
 print("=" * 60)
-print("INTEGRATING COUNTRY DATA INTO SCIARIDAE METADATA")
+print("INTEGRATING COUNTRY DATA INTO METADATA")
 print("=" * 60)
 
 # 1. Load existing metadata
 print("\n1. Loading existing metadata...")
-metadata = pd.read_csv('data/output/sciaridae_metadata_enhanced.tsv', sep='\t')
+metadata = pd.read_csv(args.metadata, sep='\t')
 print(f"   Loaded {len(metadata):,} rows")
 
 # 2. Load BOLD country data
 print("\n2. Loading BOLD country data...")
-bold_countries = pd.read_csv('data/reference_tree_bold_countries.tsv', sep='\t')
+bold_countries = pd.read_csv(args.bold_countries, sep='\t')
 print(f"   Loaded {len(bold_countries):,} specimens with country data")
 
-# 3. Load UKSI Sciaridae list
+# 3. Load UKSI species list
 print("\n3. Loading UKSI species list...")
-uksi = pd.read_csv('uksi_sciaridae_full.tsv', sep='\t', low_memory=False)
+uksi = pd.read_csv(args.uksi, sep='\t', low_memory=False)
 uksi_species = set(uksi['species'].dropna().unique())
-print(f"   UKSI contains {len(uksi_species):,} unique Sciaridae species")
+print(f"   UKSI contains {len(uksi_species):,} unique species")
 
 # 4. Extract processid from tip names
 print("\n4. Extracting process IDs from tip names...")
@@ -101,7 +109,7 @@ final_columns = [col for col in final_columns if col in metadata.columns]
 metadata_final = metadata[final_columns]
 
 # 9. Save final metadata
-output_file = 'data/output/sciaridae_taxonium_metadata_COMPLETE.tsv'
+output_file = args.output
 metadata_final.to_csv(output_file, sep='\t', index=False)
 
 print("\n" + "=" * 60)

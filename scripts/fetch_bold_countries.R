@@ -2,11 +2,23 @@
 library(BOLDconnectR)
 library(dplyr)
 
-# Set API key
-bold.apikey("7F5D2DB4-BEA4-4307-B765-81F9AA3F0618")
+args <- commandArgs(trailingOnly = TRUE)
+if (length(args) != 2) {
+  cat("Usage: Rscript fetch_bold_countries.R <processids.txt> <output.tsv>\n")
+  quit(status = 1)
+}
+input_processids <- args[1]
+output_file <- args[2]
+
+# Set API key from environment variable
+api_key <- Sys.getenv("BOLD_API_KEY")
+if (nchar(api_key) == 0) {
+  stop("BOLD_API_KEY environment variable is not set")
+}
+bold.apikey(api_key)
 
 # Load process IDs
-processids <- readLines("reference_tree_all_processids.txt")
+processids <- readLines(input_processids)
 cat(sprintf("Fetching BOLD data for %d specimens...\n\n", length(processids)))
 
 cat("Querying BOLD API (this will take several minutes)...\n")
@@ -28,8 +40,8 @@ results <- specimen_data %>%
   )
 
 # Save results
-write.table(results, 
-            "data/reference_tree_bold_countries.tsv",
+write.table(results,
+            output_file,
             sep = "\t",
             row.names = FALSE,
             quote = FALSE)
@@ -43,4 +55,4 @@ cat("\nTop countries:\n")
 country_counts <- sort(table(results$country_ocean), decreasing = TRUE)
 print(head(country_counts, 15))
 
-cat(sprintf("\n✓ Saved to: data/reference_tree_bold_countries.tsv\n"))
+cat(sprintf("\n✓ Saved to: %s\n", output_file))
