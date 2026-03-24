@@ -175,13 +175,14 @@ Outputs: `epa_result.jplace`, `epa_info.log`
 gappa examine graft \
     --jplace-path families/{Family}/epa_output/epa_result.jplace \
     --allow-file-overwriting \
-    --outdir families/{Family}/epa_output/
+    --out-dir families/{Family}/epa_output/
 ```
 
-Rename output to a consistent name:
+Rename output to a consistent name (gappa names the file after the jplace, so
+it will be `epa_result.newick`):
 ```bash
-mv families/{Family}/epa_output/*.newick \
-   families/{Family}/output/{family}_final_tree.newick
+mv families/{Family}/epa_output/epa_result.newick \
+   families/{Family}/output/{Family}_final_tree.newick
 ```
 
 ---
