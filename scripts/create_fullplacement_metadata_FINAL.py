@@ -14,6 +14,13 @@ if len(sys.argv) != 4:
 tree = Phylo.read(sys.argv[1], 'newick')
 tree_tips = {t.name: t for t in tree.get_terminals()}
 
+# Build parent map: child clade id -> parent clade
+# Used to retrieve bootstrap (confidence) of the parent node for each tip
+parent_map = {}
+for clade in tree.find_clades(order='level'):
+    for child in clade.clades:
+        parent_map[id(child)] = clade
+
 # Load jplace for EPA scores
 with open(sys.argv[2], 'r') as f:
     jplace = json.load(f)
@@ -91,6 +98,14 @@ for name in tree_tips:
         
         row['category'] = ''
     
+    # Extract parent node bootstrap for this tip
+    tip_clade = tree_tips[name]
+    parent_clade = parent_map.get(id(tip_clade))
+    if parent_clade is not None and parent_clade.confidence is not None:
+        row['parent_bootstrap'] = parent_clade.confidence
+    else:
+        row['parent_bootstrap'] = ''
+
     # Add empty columns for now
     row['geography'] = ''
     row['placement_interpretation'] = ''
@@ -108,8 +123,9 @@ for name in tree_tips:
 df = pd.DataFrame(metadata)
 
 # Reorder columns
-columns = ['name', 'bin', 'species', 'category', 'geography', 'placement_type', 
+columns = ['name', 'bin', 'species', 'category', 'geography', 'placement_type',
            'placement_quality', 'placement_interpretation', 'epa_lwr_score',
+           'parent_bootstrap',
            'bags_grade', 'bin_quality_issue', 'n_bins_for_species', 'all_bins',
            'in_uksi', 'bioscan_specimens', 'needs_attention']
 
