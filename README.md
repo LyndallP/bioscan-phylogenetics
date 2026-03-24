@@ -88,9 +88,9 @@ Each BIN is assigned a quality grade based on concordance analysis:
 
 ### Installation (via conda)
 ```bash
-conda create -n phylo -c bioconda raxml-ng epa-ng gappa python=3.9
+conda create -n phylo -c bioconda raxml-ng epa-ng gappa mafft hmmer python=3.9
 conda activate phylo
-pip install pandas ete3
+pip install pandas biopython ete3 requests
 ```
 
 ## Quick Start
