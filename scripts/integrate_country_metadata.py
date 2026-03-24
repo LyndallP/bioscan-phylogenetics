@@ -11,7 +11,7 @@ import re
 parser = argparse.ArgumentParser(description="Integrate BOLD country data into placement metadata")
 parser.add_argument("--metadata", required=True, help="Input metadata TSV (from add_enhanced_metadata.py)")
 parser.add_argument("--bold-countries", required=True, help="BOLD countries TSV (from fetch_bold_countries.R)")
-parser.add_argument("--uksi", required=True, help="UKSI species list TSV (column: species)")
+parser.add_argument("--uksi", required=True, help="Family gap analysis CSV (from filter_uksi_by_family.py; column: taxon_name)")
 parser.add_argument("--output", required=True, help="Output metadata TSV")
 args = parser.parse_args()
 
@@ -29,11 +29,13 @@ print("\n2. Loading BOLD country data...")
 bold_countries = pd.read_csv(args.bold_countries, sep='\t')
 print(f"   Loaded {len(bold_countries):,} specimens with country data")
 
-# 3. Load UKSI species list
+# 3. Load UKSI species list (from filter_uksi_by_family.py output)
 print("\n3. Loading UKSI species list...")
-uksi = pd.read_csv(args.uksi, sep='\t', low_memory=False)
-uksi_species = set(uksi['species'].dropna().unique())
-print(f"   UKSI contains {len(uksi_species):,} unique species")
+uksi = pd.read_csv(args.uksi, low_memory=False)
+# gap analysis uses 'taxon_name'; fall back to 'species' for plain species-list TSVs
+name_col = 'taxon_name' if 'taxon_name' in uksi.columns else 'species'
+uksi_species = set(uksi[name_col].dropna().unique())
+print(f"   UKSI contains {len(uksi_species):,} unique species (column: {name_col})")
 
 # 4. Extract processid from tip names
 print("\n4. Extracting process IDs from tip names...")

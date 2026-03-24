@@ -2,12 +2,24 @@
 """
 Add subfamily column to Sciaridae metadata based on genus
 Uses classification from Shin et al. (2012) molecular phylogeny
+
+Note: For other families, create a family-specific equivalent of this script
+with the appropriate genus→subfamily mapping for that family.
 """
 
+import sys
 import pandas as pd
 
+if len(sys.argv) != 3:
+    print(f"Usage: {sys.argv[0]} <input_metadata.tsv> <output_metadata.tsv>")
+    sys.exit(1)
+
 # Load metadata
-df = pd.read_csv('/mnt/user-data/uploads/sciaridae_metadata_FINAL_UPLOAD.tsv', sep='\t')
+df = pd.read_csv(sys.argv[1], sep='\t')
+
+# Extract genus from species column if not already present
+if 'genus' not in df.columns:
+    df['genus'] = df['species'].str.split().str[0]
 
 print("=" * 80)
 print("ADDING SUBFAMILY COLUMN")
@@ -74,7 +86,7 @@ else:
 df = df[cols]
 
 # Save
-output_file = '/mnt/user-data/outputs/sciaridae_metadata_WITH_SUBFAMILY.tsv'
+output_file = sys.argv[2]
 df.to_csv(output_file, sep='\t', index=False)
 
 print(f"\n✓ Saved to: {output_file}")
