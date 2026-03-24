@@ -124,16 +124,46 @@ Notes:
 
 ---
 
+### Step 4c — Normalize BOLD BIN identifiers (required)
+
+IQ-TREE drops the colon from `BOLD:ACP1705` → `BOLDACP1705` in tree tip
+labels, while FASTA files retain the colon. EPA-ng requires an exact match
+between tree tips and alignment IDs, so normalize all three files:
+
+```bash
+python scripts/normalize_ids.py \
+    families/{Family}/input/{Family}_aligned_clean.fasta \
+    families/{Family}/input/{Family}_aligned_clean_norm.fasta
+
+python scripts/normalize_ids.py \
+    families/{Family}/input/{Family}_no_outgroup.treefile \
+    families/{Family}/input/{Family}_no_outgroup_norm.treefile
+
+python scripts/normalize_ids.py \
+    families/{Family}/input/query_sequences_aligned.fasta \
+    families/{Family}/input/query_sequences_aligned_norm.fasta
+```
+
+---
+
 ### Step 5 — Place query sequences with EPA-ng
+
+Use the normalized files. Pass `--model GTR+G` explicitly (required when
+providing pre-aligned query sequences):
 
 ```bash
 epa-ng \
-    --tree families/{Family}/input/{Family}_no_outgroup.treefile \
-    --ref-msa families/{Family}/input/{Family}_aligned_clean.fasta \
-    --query families/{Family}/input/query_sequences_aligned.fasta \
+    --tree families/{Family}/input/{Family}_no_outgroup_norm.treefile \
+    --ref-msa families/{Family}/input/{Family}_aligned_clean_norm.fasta \
+    --query families/{Family}/input/query_sequences_aligned_norm.fasta \
     --outdir families/{Family}/epa_output/ \
+    --model GTR+G \
     --redo
 ```
+
+Note: `--model GTR+G` uses generic unoptimized parameters. For better accuracy,
+evaluate model parameters with RAxML (`raxmlHPC -f e`) or IQ-TREE
+(`iqtree2 -te`) and pass the resulting model file to `--model`.
 
 Outputs: `epa_result.jplace`, `epa_info.log`
 
