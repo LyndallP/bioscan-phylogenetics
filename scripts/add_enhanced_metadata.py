@@ -41,6 +41,7 @@ df.loc[df['placement_type'] == 'polytomy', 'geography'] = 'United Kingdom'
 # Reorder columns to match expected 20-column format
 columns = ['name', 'bin', 'species', 'category', 'geography', 'in_uksi',
            'placement_type', 'placement_quality', 'placement_interpretation', 'epa_lwr_score',
+           'parent_bootstrap',
            'bags_grade', 'bin_quality_issue', 'n_bins_for_species', 'all_bins',
            'bioscan_specimens', 'needs_attention',
            'tolid', 'assembly_status', 'genome_status', 'dataset']
