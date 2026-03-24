@@ -202,12 +202,12 @@ def make_tolqc_link(row):
 
 
 def make_blast_link(row):
-    pid = str(row.get('processid', '') or '')
-    if not pid or pid in ('nan', ''):
+    seq = str(row.get('bold_nuc', '') or '')
+    if not seq or seq in ('nan', ''):
         return ''
     url = (
         f"https://blast.ncbi.nlm.nih.gov/Blast.cgi"
-        f"?PROGRAM=blastn&PAGE_TYPE=BlastSearch&QUERY={pid}"
+        f"?PROGRAM=blastn&PAGE_TYPE=BlastSearch&QUERY={seq}"
     )
     return make_markdown_link(url, "🧬 NCBI BLAST")
 
