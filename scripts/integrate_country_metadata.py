@@ -84,31 +84,13 @@ metadata['geography'] = metadata.apply(assign_geography, axis=1)
 print("\n7. Creating in_uksi column...")
 metadata['in_uksi'] = metadata['species'].isin(uksi_species)
 
-# 8. Reorganize columns for final metadata
-print("\n8. Organizing final columns...")
-final_columns = [
-    'name',
-    'bin',
-    'species',
-    'processid',
-    'category',
-    'geography',
-    'in_uksi',
-    'placement_type',
-    'placement_quality',
-    'placement_interpretation',
-    'epa_lwr_score',
-    'bags_grade',
-    'bin_quality_issue',
-    'n_bins_for_species',
-    'all_bins',
-    'bioscan_specimens',
-    'needs_attention'
-]
-
-# Keep only columns that exist
-final_columns = [col for col in final_columns if col in metadata.columns]
-metadata_final = metadata[final_columns]
+# 8. Drop temporary merge columns; preserve all other columns passed in
+print("\n8. Cleaning up temporary columns...")
+drop_cols = ['processid_extracted', 'country_ocean', 'province_state']
+metadata_final = metadata.drop(
+    columns=[c for c in drop_cols if c in metadata.columns]
+)
+print(f"   Preserved {len(metadata_final.columns)} columns")
 
 # 9. Save final metadata
 output_file = args.output
