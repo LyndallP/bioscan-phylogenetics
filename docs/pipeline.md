@@ -85,15 +85,34 @@ Otherwise use bioscan_representatives.fasta directly as query_sequences.fasta.
 
 ---
 
+### Step 4b — Align query sequences to reference profile (required)
+
+EPA-ng v0.3.8 requires all query sequences to be pre-aligned to the reference
+alignment (equal length). Use hmmer to build a profile and align the queries:
+
+```bash
+hmmbuild families/{Family}/input/ref.hmm \
+    families/{Family}/input/{Family}_aligned_clean.fasta
+
+hmmalign --outformat afa --trim \
+    families/{Family}/input/ref.hmm \
+    families/{Family}/input/query_sequences.fasta \
+    > families/{Family}/input/query_sequences_aligned.fasta
+```
+
+`--trim` removes terminal residues outside the reference alignment columns,
+ensuring the output is exactly the same width as the reference alignment.
+
+---
+
 ### Step 5 — Place query sequences with EPA-ng
 
 ```bash
 epa-ng \
     --tree families/{Family}/input/{Family}_no_outgroup.treefile \
     --ref-msa families/{Family}/input/{Family}_aligned_clean.fasta \
-    --query families/{Family}/input/query_sequences.fasta \
+    --query families/{Family}/input/query_sequences_aligned.fasta \
     --outdir families/{Family}/epa_output/ \
-    --heuristic-exponent 0.386 \
     --redo
 ```
 
