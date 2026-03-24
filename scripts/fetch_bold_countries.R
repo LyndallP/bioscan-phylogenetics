@@ -4,11 +4,12 @@ library(dplyr)
 
 args <- commandArgs(trailingOnly = TRUE)
 if (length(args) != 2) {
-  cat("Usage: Rscript fetch_bold_countries.R <processids.txt> <output.tsv>\n")
+  cat("Usage: Rscript fetch_bold_countries.R <metadata.tsv> <output.tsv>\n")
+  cat("  metadata.tsv : output of add_enhanced_metadata.py (has 'name' column)\n")
   quit(status = 1)
 }
-input_processids <- args[1]
-output_file <- args[2]
+input_metadata <- args[1]
+output_file    <- args[2]
 
 # Set API key from environment variable
 api_key <- Sys.getenv("BOLD_API_KEY")
@@ -17,9 +18,21 @@ if (nchar(api_key) == 0) {
 }
 bold.apikey(api_key)
 
-# Load process IDs
-processids <- readLines(input_processids)
-cat(sprintf("Fetching BOLD data for %d specimens...\n\n", length(processids)))
+# Load metadata TSV and extract process IDs from the name column.
+# Tip format: Species|BIN|ProcessID  (or Species|no_BIN|polytomy for polytomies)
+metadata <- read.table(input_metadata, sep = "\t", header = TRUE,
+                       quote = "", comment.char = "", stringsAsFactors = FALSE)
+
+extract_processid <- function(name) {
+  parts <- strsplit(name, "\\|")[[1]]
+  if (length(parts) >= 3) parts[3] else NA_character_
+}
+
+all_ids <- sapply(metadata$name, extract_processid, USE.NAMES = FALSE)
+# Drop polytomy placeholders and NAs
+processids <- unique(all_ids[!is.na(all_ids) & all_ids != "polytomy"])
+
+cat(sprintf("Fetching BOLD data for %d unique process IDs...\n\n", length(processids)))
 
 cat("Querying BOLD API (this will take several minutes)...\n")
 
