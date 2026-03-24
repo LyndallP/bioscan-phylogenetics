@@ -32,12 +32,23 @@ def extract_tree_tips(tree_file):
 
 def extract_fasta_ids(fasta_file):
     ids = set()
+    headers_with_spaces = []
     with open(fasta_file) as f:
         for line in f:
             if line.startswith('>'):
-                # Use the full header (strip leading > and trailing whitespace)
                 full_header = line[1:].strip()
-                ids.add(full_header)
+                # EPA-ng (like most tools) uses only the first whitespace-delimited
+                # token as the sequence ID — match that behaviour here.
+                seq_id = full_header.split()[0]
+                if seq_id != full_header:
+                    headers_with_spaces.append(full_header)
+                ids.add(seq_id)
+    if headers_with_spaces:
+        print(f"WARNING: {len(headers_with_spaces)} FASTA headers contain spaces — "
+              f"EPA-ng will truncate the ID at the first space")
+        print(f"  Example: {repr(headers_with_spaces[0])}")
+        print(f"  EPA-ng ID would be: {repr(headers_with_spaces[0].split()[0])}")
+        print()
     return ids
 
 if __name__ == '__main__':
