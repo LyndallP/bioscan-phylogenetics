@@ -61,32 +61,29 @@ for record in ingroup:
 if n_replaced_total == 0:
     print("No non-ATCGN characters found.")
 
-# Write manually to normalise headers so they match IQ-TREE Newick tip labels.
+# Write using record.id (the first whitespace-delimited token from the FASTA
+# header) rather than record.description (the full header line).
 #
-# IQ-TREE does two things to FASTA headers when writing Newick:
-#   1. Replaces spaces with underscores (space is whitespace, which terminates
-#      the sequence name in FASTA; IQ-TREE joins the full name with '_').
-#   2. Drops colons from BOLD: identifiers (: is a Newick branch-length separator).
+# The reference alignment has extra annotation after the sequence ID:
+#   >Bradysia_pratincola|BOLDACP1705|NORSC1832-17 Ingroup|Bradysia ...|Sciaridae
 #
-# EPA-ng requires tree tip labels to match MSA sequence IDs exactly, so we
-# apply the same two transforms here.
+# IQ-TREE uses only the first whitespace-delimited token as the Newick tip
+# label. EPA-ng must match tree tips against MSA IDs exactly, so we must also
+# write only the first token — record.id — stripping the annotation.
+#
+# We also normalise BOLD: → BOLD because IQ-TREE strips the colon (it is a
+# Newick branch-length separator) from tip labels.
 n_bold_fixed = 0
-n_space_fixed = 0
 with open(output_file, 'w') as out:
     for record in cleaned:
-        header = record.description
-        normalised = header.replace('BOLD:', 'BOLD')
-        if normalised != header:
+        seq_id = record.id
+        normalised = seq_id.replace('BOLD:', 'BOLD')
+        if normalised != seq_id:
             n_bold_fixed += 1
-        normalised2 = normalised.replace(' ', '_')
-        if normalised2 != normalised:
-            n_space_fixed += 1
-        out.write(f'>{normalised2}\n{str(record.seq)}\n')
+        out.write(f'>{normalised}\n{str(record.seq)}\n')
 
 if n_bold_fixed:
     print(f"Normalised BOLD: → BOLD in {n_bold_fixed} sequence header(s)")
 else:
     print("BOLD ID format: already normalised (no BOLD: found)")
-if n_space_fixed:
-    print(f"Replaced spaces with underscores in {n_space_fixed} sequence header(s)")
 print(f"\nOutput: {len(cleaned)} sequences → {output_file}")

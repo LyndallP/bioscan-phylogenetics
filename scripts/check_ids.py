@@ -2,33 +2,26 @@
 """
 Diagnose ID mismatches between a reference tree and reference MSA.
 
-Reads all tip labels from a Newick tree and all sequence IDs from a FASTA,
-then reports which IDs are missing from each side, and prints a sample from
-each file so you can see the actual format in use.
+Reads all tip labels from a Newick tree (using ete3) and all sequence IDs
+from a FASTA, then reports which IDs are missing from each side, and prints
+a sample from each file so you can see the actual format in use.
 
 Usage:
   python scripts/check_ids.py <tree_file> <fasta_file>
 
 Example:
   python scripts/check_ids.py \
-      families/Sciaridae/input/Sciaridae_no_outgroup_normalized.treefile \
-      families/Sciaridae/input/Sciaridae_aligned_clean_normalized.fasta
+      families/Sciaridae/input/Sciaridae_no_outgroup.treefile \
+      families/Sciaridae/input/Sciaridae_aligned_clean.fasta
 """
-import re
 import sys
+from ete3 import Tree
+
 
 def extract_tree_tips(tree_file):
-    with open(tree_file) as f:
-        content = f.read()
-    # Extract all tip/node labels: text between ( , ) and before : or , or ) or ;
-    # This regex captures Newick labels (quoted or unquoted)
-    labels = re.findall(r"'([^']+)'|([A-Za-z0-9_|.\-]+)(?=\s*[,):;])", content)
-    tips = set()
-    for quoted, unquoted in labels:
-        label = quoted if quoted else unquoted
-        if label:
-            tips.add(label)
-    return tips
+    """Return set of leaf names from a Newick tree using ete3."""
+    tree = Tree(tree_file, format=1)
+    return {leaf.name for leaf in tree}
 
 def extract_fasta_ids(fasta_file):
     ids = set()
