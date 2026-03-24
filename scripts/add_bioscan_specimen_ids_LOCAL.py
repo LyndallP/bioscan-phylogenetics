@@ -1,76 +1,103 @@
 #!/usr/bin/env python3
 """
-Add sts_specimen.id from BIOSCAN data and create Sanger image URLs
-RUN THIS ON YOUR MAC in the directory with the metadata file
+Add ThumbnailURL column to placement metadata using the BOLD CAOS API.
+
+Fetches specimen images directly from BOLD for all specimens that have a
+process ID (BIOSCAN, reference tree, DTOL where applicable).  No API key
+required — uses the public CAOS endpoint:
+  https://caos.boldsystems.org/api/images?processids=<ids>
+  https://caos.boldsystems.org/api/objects/<objectid>
+
+Taxonium renders images automatically when a ThumbnailURL column is present.
 
 Usage:
-  python3 add_bioscan_specimen_ids_LOCAL.py
+    python scripts/add_bioscan_specimen_ids_LOCAL.py <input_metadata.tsv> <output_metadata.tsv>
 """
 
 import sys
+import json
+import time
+import urllib.request
+import urllib.error
 import pandas as pd
 import os
 
-if len(sys.argv) != 4:
-    print(f"Usage: {sys.argv[0]} <bioscan_data.tsv> <input_metadata.tsv> <output_metadata.tsv>")
+if len(sys.argv) != 3:
+    print(f"Usage: {sys.argv[0]} <input_metadata.tsv> <output_metadata.tsv>")
     sys.exit(1)
 
+# BOLD CAOS API endpoints
+CAOS_BASE_URL = "https://caos.boldsystems.org/api/images?processids="
+CAOS_IMAGE_URL = "https://caos.boldsystems.org/api/objects/"
+BATCH_SIZE = 100
+URL_MAX_LEN = 7500
+SLEEP_BETWEEN = 0.5  # seconds between batches
+
 print("=" * 80)
-print("ADDING BIOSCAN SPECIMEN IDs AND IMAGE URLs")
+print("ADDING BOLD THUMBNAIL URLs")
 print("=" * 80)
 
+
+def fetch_image_map(processids):
+    """
+    Query BOLD CAOS API for a list of process IDs.
+    Returns dict: {processid: objectid} for those that have images.
+    """
+    sub_batches = []
+    current = []
+    current_len = 0
+    for pid in processids:
+        if current_len + len(pid) + 1 > URL_MAX_LEN and current:
+            sub_batches.append(current)
+            current = [pid]
+            current_len = len(pid)
+        else:
+            current.append(pid)
+            current_len += len(pid) + 1
+    if current:
+        sub_batches.append(current)
+
+    image_map = {}
+    for i, batch in enumerate(sub_batches):
+        url = CAOS_BASE_URL + ",".join(batch)
+        try:
+            req = urllib.request.Request(
+                url, headers={"User-Agent": "bioscan-phylogenetics/1.0"}
+            )
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+            for entry in data:
+                pid = entry.get("processid")
+                oid = entry.get("objectid")
+                if pid and oid:
+                    image_map[pid] = oid
+        except urllib.error.HTTPError as e:
+            print(f"   Warning: HTTP {e.code} on batch {i + 1}: {e.reason}")
+        except urllib.error.URLError as e:
+            print(f"   Warning: URL error on batch {i + 1}: {e.reason}")
+        except json.JSONDecodeError as e:
+            print(f"   Warning: JSON parse error on batch {i + 1}: {e}")
+        time.sleep(SLEEP_BETWEEN)
+
+    return image_map
+
+
 # ============================================================================
-# 1. LOAD ORIGINAL BIOSCAN DATA
+# 1. LOAD METADATA
 # ============================================================================
 
-print("\n1. Loading original BIOSCAN data...")
-bioscan_file = sys.argv[1]
-
-try:
-    bioscan_data = pd.read_csv(bioscan_file, sep='\t')
-    print(f"   ✓ Loaded {len(bioscan_data):,} BIOSCAN records")
-    
-    # Check for required columns
-    required_cols = ['sts_specimen.id', 'bold_processid']
-    missing = [col for col in required_cols if col not in bioscan_data.columns]
-    
-    if missing:
-        print(f"\n   ERROR: Missing columns: {missing}")
-        print(f"   Available columns: {list(bioscan_data.columns[:10])}")
-        exit(1)
-        
-    print(f"   ✓ Found required columns")
-    
-    # Create lookup dictionary: bold_processid -> sts_specimen.id
-    specimen_lookup = dict(zip(bioscan_data['bold_processid'], bioscan_data['sts_specimen.id']))
-    print(f"   ✓ Created lookup for {len(specimen_lookup):,} processids")
-    
-except FileNotFoundError:
-    print(f"\n   ERROR: File not found: {bioscan_file}")
-    print(f"   Please check the file path")
-    exit(1)
-except Exception as e:
-    print(f"\n   ERROR: {e}")
-    exit(1)
+print(f"\n1. Loading metadata from: {sys.argv[1]}")
+df = pd.read_csv(sys.argv[1], sep='\t')
+print(f"   Loaded {len(df):,} specimens")
 
 # ============================================================================
-# 2. LOAD CURRENT METADATA (from Downloads folder)
+# 2. EXTRACT PROCESS IDs
 # ============================================================================
 
-print("\n2. Loading current metadata...")
+print("\n2. Extracting process IDs from tip names...")
 
-metadata_file = sys.argv[2]
-df = pd.read_csv(metadata_file, sep='\t')
-print(f"   ✓ Loaded {len(df):,} specimens from {os.path.basename(metadata_file)}")
-
-# ============================================================================
-# 3. EXTRACT PROCESSID FROM TIP NAMES AND MATCH
-# ============================================================================
-
-print("\n3. Matching to BIOSCAN data...")
-
-def extract_processid_from_name(name):
-    """Extract processid from tip name: Species|BIN|ProcessID"""
+def extract_processid(name):
+    """Extract processid from tip format: Species|BIN|ProcessID"""
     if pd.isna(name):
         return None
     parts = name.split('|')
@@ -78,131 +105,65 @@ def extract_processid_from_name(name):
         return parts[2]
     return None
 
-# Extract processid from name if not already present
 if 'processid' not in df.columns:
-    df['processid'] = df['name'].apply(extract_processid_from_name)
+    df['processid'] = df['name'].apply(extract_processid)
 
-# Look up sts_specimen.id using processid
-df['sts_specimen.id'] = df['processid'].map(specimen_lookup)
-
-matched_count = df['sts_specimen.id'].notna().sum()
-bioscan_count = (df['dataset'] == 'BIOSCAN').sum()
-
-print(f"   ✓ Matched {matched_count:,} specimens to BIOSCAN data")
-print(f"   Total BIOSCAN specimens in tree: {bioscan_count:,}")
-
-if matched_count < bioscan_count:
-    print(f"   ⚠ {bioscan_count - matched_count:,} BIOSCAN specimens missing sts_specimen.id")
+processids = df['processid'].dropna().unique().tolist()
+print(f"   Found {len(processids):,} unique process IDs")
 
 # ============================================================================
-# 4. CREATE SANGER IMAGE URLs
+# 3. FETCH THUMBNAILS FROM BOLD CAOS API
 # ============================================================================
 
-print("\n4. Creating Sanger image URLs...")
+print(f"\n3. Querying BOLD CAOS API for thumbnail images...")
+print(f"   Processing {len(processids):,} IDs in batches of {BATCH_SIZE}...")
 
-def create_sanger_thumbnail_url(row):
-    """
-    Create Sanger image URL using sts_specimen.id
-    Format: https://tol-bioscan-images.cog.sanger.ac.uk/processed_images/{sts_specimen.id}.jpg
-    """
-    if pd.isna(row['sts_specimen.id']):
-        return ''
-    
-    # Only for BIOSCAN specimens
-    if row['dataset'] != 'BIOSCAN':
-        return ''
-    
-    return f"https://tol-bioscan-images.cog.sanger.ac.uk/processed_images/{row['sts_specimen.id']}.jpg"
+image_map = fetch_image_map(processids)
+print(f"   Found images for {len(image_map):,} / {len(processids):,} specimens")
 
-df['ThumbnailURL'] = df.apply(create_sanger_thumbnail_url, axis=1)
+# ============================================================================
+# 4. ADD ThumbnailURL COLUMN
+# ============================================================================
+
+print("\n4. Adding ThumbnailURL column...")
+
+df['ThumbnailURL'] = df['processid'].apply(
+    lambda pid: f"{CAOS_IMAGE_URL}{image_map[pid]}" if pid in image_map else ''
+)
 
 thumbnail_count = (df['ThumbnailURL'] != '').sum()
-print(f"   ✓ Created {thumbnail_count:,} Sanger image URLs")
+print(f"   ThumbnailURL populated for {thumbnail_count:,} specimens")
+
+# Dataset breakdown
+if 'dataset' in df.columns:
+    for dataset in sorted(df['dataset'].dropna().unique()):
+        ds_df = df[df['dataset'] == dataset]
+        has_thumb = (ds_df['ThumbnailURL'] != '').sum()
+        print(f"   {dataset}: {has_thumb:,} / {len(ds_df):,} with thumbnail")
 
 # ============================================================================
-# 5. REORDER COLUMNS
+# 5. REORDER: put ThumbnailURL after species
 # ============================================================================
 
-print("\n5. Reordering columns...")
-
-# Get current columns
 cols = df.columns.tolist()
-
-# Remove ThumbnailURL and sts_specimen.id to reposition them
-for col in ['ThumbnailURL', 'sts_specimen.id']:
-    if col in cols:
-        cols.remove(col)
-
-# Remove old specimen_id if present
-if 'specimen_id' in cols:
-    cols.remove('specimen_id')
-
-# Insert ThumbnailURL after species
-species_idx = cols.index('species') if 'species' in cols else 3
+if 'ThumbnailURL' in cols:
+    cols.remove('ThumbnailURL')
+species_idx = cols.index('species') if 'species' in cols else 2
 cols.insert(species_idx + 1, 'ThumbnailURL')
-
-# Insert sts_specimen.id after processid
-if 'processid' in cols:
-    processid_idx = cols.index('processid')
-    cols.insert(processid_idx + 1, 'sts_specimen.id')
-
 df = df[cols]
 
-print("   ✓ Reordered columns")
-
 # ============================================================================
-# 6. SAVE FINAL METADATA
+# 6. SAVE
 # ============================================================================
 
-output_file = sys.argv[3]
+output_file = sys.argv[2]
 df.to_csv(output_file, sep='\t', index=False)
 
 print("\n" + "=" * 80)
-print("SUCCESS!")
+print("SUMMARY")
 print("=" * 80)
-
-print(f"\n✓ BIOSCAN specimen IDs added: {matched_count:,}")
-print(f"✓ Sanger image URLs created: {thumbnail_count:,}")
-print(f"\n✓ Saved to: {output_file}")
-print(f"  Rows: {len(df):,}")
-print(f"  Columns: {len(df.columns)}")
-
-# Show breakdown
-print("\n" + "=" * 80)
-print("BREAKDOWN BY DATASET")
-print("=" * 80)
-
-for dataset in sorted(df['dataset'].dropna().unique()):
-    dataset_df = df[df['dataset'] == dataset]
-    has_id = dataset_df['sts_specimen.id'].notna().sum()
-    has_image = (dataset_df['ThumbnailURL'] != '').sum()
-    print(f"\n{dataset}:")
-    print(f"  Total specimens: {len(dataset_df):,}")
-    print(f"  With sts_specimen.id: {has_id:,}")
-    print(f"  With image URL: {has_image:,}")
-
-# Show examples
-print("\n" + "=" * 80)
-print("EXAMPLE BIOSCAN SPECIMENS WITH IMAGES")
-print("=" * 80)
-
-examples = df[(df['ThumbnailURL'] != '') & (df['sts_specimen.id'].notna())].head(3)
-
-if len(examples) > 0:
-    for idx, row in examples.iterrows():
-        print(f"\n{row['species']}")
-        print(f"  ProcessID: {row['processid']}")
-        print(f"  sts_specimen.id: {row['sts_specimen.id']}")
-        print(f"  Image URL: {row['ThumbnailURL']}")
-else:
-    print("\nNo BIOSCAN specimens with images found")
-
-print("\n" + "=" * 80)
-print("NEXT STEPS")
-print("=" * 80)
-print(f"\n1. File saved to: {output_file}")
-print("2. Upload this file to Taxonium along with your tree")
-print("3. Taxonium will display thumbnails from the ThumbnailURL column")
-print("\n✓ Done!")
-
+print(f"\n✓ ThumbnailURL added for {thumbnail_count:,} specimens")
+print(f"✓ Image source: BOLD CAOS API (https://caos.boldsystems.org)")
+print(f"✓ Saved to: {output_file}")
+print(f"\nIn Taxonium: thumbnails appear automatically when clicking tips.")
 print("\n" + "=" * 80 + "\n")
