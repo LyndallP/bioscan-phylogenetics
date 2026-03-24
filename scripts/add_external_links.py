@@ -216,7 +216,7 @@ def make_bold_bin_link(row):
     b = str(row.get('bin', '') or '')
     if not b or b in ('no_BIN', 'nan', ''):
         return ''
-    url = f"http://www.boldsystems.org/index.php/Public_BarcodeCluster?clusteruri={b}"
+    url = f"https://portal.boldsystems.org/result?query={b}[bins]"
     return make_markdown_link(url, "🔷 BOLD BIN detail")
 
 
@@ -224,7 +224,7 @@ def make_bold_specimen_link(row):
     pid = str(row.get('processid', '') or '')
     if not pid or pid in ('nan', ''):
         return ''
-    url = f"http://www.boldsystems.org/index.php/Public_RecordView?processid={pid}"
+    url = f"https://portal.boldsystems.org/result?query={pid}[ids]"
     return make_markdown_link(url, "🪰 This specimen")
 
 
@@ -309,15 +309,27 @@ def main():
             print(f"   {old} -> {new}")
 
     # ------------------------------------------------------------------
+    # Restore BOLD: colon in BIN columns (stripped by 03_clean_alignment.py
+    # because colons are Newick branch-length separators)
+    # ------------------------------------------------------------------
+    print("\n2. Restoring BOLD: colon in BIN columns...")
+    for col in ('bin', 'all_bins_for_species', 'all_bins'):
+        if col in df.columns:
+            before = df[col].str.contains('BOLD:', na=False).sum()
+            df[col] = df[col].str.replace(r'\bBOLD(?!:)', 'BOLD:', regex=True)
+            after = df[col].str.contains('BOLD:', na=False).sum()
+            print(f"   {col}: {after - before:,} values restored")
+
+    # ------------------------------------------------------------------
     # Add family column
     # ------------------------------------------------------------------
-    print(f"\n2. Adding family column: {args.family}")
+    print(f"\n3. Adding family column: {args.family}")
     df['family'] = args.family
 
     # ------------------------------------------------------------------
     # geography_broad
     # ------------------------------------------------------------------
-    print("\n3. Creating geography_broad column...")
+    print("\n4. Creating geography_broad column...")
     df['geography_broad'] = df['geography'].map(GEOGRAPHY_BROAD_MAP).fillna('Other')
     unmapped = df[df['geography_broad'] == 'Other']['geography'].dropna().unique()
     unmapped = [v for v in unmapped if v not in ('', 'Unknown', 'nan')]
@@ -331,10 +343,10 @@ def main():
     # species_in_GOAT
     # ------------------------------------------------------------------
     if args.skip_goat:
-        print("\n4. Skipping GOAT check (--skip-goat)")
+        print("\n5. Skipping GOAT check (--skip-goat)")
         df['species_in_GOAT'] = False
     else:
-        print("\n4. Checking GOAT presence (per unique species)...")
+        print("\n5. Checking GOAT presence (per unique species)...")
         unique_species = df['species'].dropna().unique().tolist()
         print(f"   {len(unique_species):,} unique species to check")
         goat_map = check_goat_presence_batch(unique_species)
@@ -345,7 +357,7 @@ def main():
     # ------------------------------------------------------------------
     # External link columns
     # ------------------------------------------------------------------
-    print("\n5. Creating external link columns...")
+    print("\n6. Creating external link columns...")
 
     df['GBIF'] = df.apply(make_gbif_link, axis=1)
     print(f"   GBIF: {(df['GBIF'] != '').sum():,} links")
