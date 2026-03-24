@@ -85,23 +85,28 @@ Otherwise use bioscan_representatives.fasta directly as query_sequences.fasta.
 
 ---
 
-### Step 4b — Align query sequences to reference profile (required)
+### Step 4b — Align query sequences to reference alignment (required)
 
-EPA-ng v0.3.8 requires all query sequences to be pre-aligned to the reference
-alignment (equal length). Use hmmer to build a profile and align the queries:
+EPA-ng v0.3.8 requires query sequences pre-aligned to the exact same column
+width as the reference alignment. Use MAFFT `--add --keeplength` to insert
+query sequences into the reference alignment without altering its column
+structure, then extract just the query sequences:
 
 ```bash
-hmmbuild families/{Family}/input/ref.hmm \
-    families/{Family}/input/{Family}_aligned_clean.fasta
+mafft --add families/{Family}/input/query_sequences.fasta \
+      --keeplength \
+      families/{Family}/input/{Family}_aligned_clean.fasta \
+      > families/{Family}/input/temp_combined_aligned.fasta
 
-hmmalign --outformat afa --trim \
-    families/{Family}/input/ref.hmm \
+python scripts/extract_aligned_queries.py \
+    families/{Family}/input/temp_combined_aligned.fasta \
     families/{Family}/input/query_sequences.fasta \
-    > families/{Family}/input/query_sequences_aligned.fasta
+    families/{Family}/input/query_sequences_aligned.fasta
 ```
 
-`--trim` removes terminal residues outside the reference alignment columns,
-ensuring the output is exactly the same width as the reference alignment.
+Note: hmmalign is not suitable here — it outputs only model match-state columns
+(~657) rather than the full reference alignment width (~950), causing EPA-ng to
+abort with a column mismatch error.
 
 ---
 
