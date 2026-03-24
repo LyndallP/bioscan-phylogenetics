@@ -88,24 +88,39 @@ Otherwise use bioscan_representatives.fasta directly as query_sequences.fasta.
 ### Step 4b — Align query sequences to reference alignment (required)
 
 EPA-ng v0.3.8 requires query sequences pre-aligned to the exact same column
-width as the reference alignment. Use MAFFT `--addfragments` to align query
-sequences against the reference alignment profile, outputting only the query
-sequences at the correct reference column width:
+width as the reference alignment. Use MAFFT `--add --keeplength` to insert
+query sequences into the existing alignment without altering its column
+structure, then extract just the query sequences with a Python one-liner:
 
 ```bash
-mafft --addfragments families/{Family}/input/query_sequences.fasta \
+# Add query sequences to reference alignment (keeps reference column width)
+mafft --add families/{Family}/input/query_sequences.fasta \
+      --keeplength \
       families/{Family}/input/{Family}_aligned_clean.fasta \
-      > families/{Family}/input/query_sequences_aligned.fasta
+      > families/{Family}/input/temp_combined_aligned.fasta
+
+# Extract only the query sequences from the combined output
+python3 -c "
+import os
+from Bio import SeqIO
+fam = os.environ['FAM']
+qids = {r.id for r in SeqIO.parse(f'families/{fam}/input/query_sequences.fasta', 'fasta')}
+count = 0
+with open(f'families/{fam}/input/query_sequences_aligned.fasta', 'w') as out:
+    for r in SeqIO.parse(f'families/{fam}/input/temp_combined_aligned.fasta', 'fasta'):
+        if r.id in qids:
+            out.write(f'>{r.description}\n{str(r.seq)}\n')
+            count += 1
+print(f'Extracted {count} sequences')
+"
 ```
 
 Notes:
-- `--addfragments` outputs **only** the query sequences aligned to the reference
-  width — no extraction step needed.
-- hmmalign is not suitable here: it outputs only model match-state columns
-  (~657) rather than the full reference alignment width (~950), causing EPA-ng
-  to abort with a column mismatch error.
-- MAFFT `--add --keeplength` also works but outputs the full combined alignment
-  (reference + query); you would then need to extract query sequences separately.
+- hmmalign is not suitable: it outputs only model match-state columns (~657)
+  rather than the full reference alignment width (~950), causing EPA-ng to
+  abort with a column mismatch error.
+- `mafft --addfragments` is not suitable: it segfaults on macOS (miniforge)
+  for inputs of this size.
 
 ---
 
