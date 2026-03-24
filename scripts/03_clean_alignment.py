@@ -2,10 +2,14 @@
 """
 Clean a reference alignment FASTA for use with EPA-ng and MAFFT.
 
-Does two things in one pass:
+Does three things in one pass:
   1. Removes outgroup sequences (headers starting with "OUTGROUP")
   2. Uppercases all sequences and replaces non-ATCGN characters with N
      (MAFFT rejects lowercase letters and ambiguity codes such as 'e')
+  3. Normalises BOLD BIN identifiers: BOLD:XXXXXX → BOLDXXXXXX
+     IQ-TREE strips the colon from tip labels (: is a Newick branch-length
+     separator), so the cleaned alignment must use the same colon-free format
+     to match the tree for EPA-ng placement.
 
 The raw alignment provided with the reference tree (e.g. Sciaridae_aligned.fasta)
 may contain outgroup sequences and/or lowercase/ambiguous characters.
@@ -57,5 +61,20 @@ for record in ingroup:
 if n_replaced_total == 0:
     print("No non-ATCGN characters found.")
 
-SeqIO.write(cleaned, output_file, 'fasta')
+# Write manually so we can normalise BOLD: → BOLD in headers.
+# SeqIO.write preserves the original description (including BOLD:xxx), but
+# IQ-TREE strips colons from tip labels, so the MSA must also use BOLDxxx.
+n_bold_fixed = 0
+with open(output_file, 'w') as out:
+    for record in cleaned:
+        header = record.description
+        normalised = header.replace('BOLD:', 'BOLD')
+        if normalised != header:
+            n_bold_fixed += 1
+        out.write(f'>{normalised}\n{str(record.seq)}\n')
+
+if n_bold_fixed:
+    print(f"Normalised BOLD: → BOLD in {n_bold_fixed} sequence header(s)")
+else:
+    print("BOLD ID format: already normalised (no BOLD: found)")
 print(f"\nOutput: {len(cleaned)} sequences → {output_file}")
