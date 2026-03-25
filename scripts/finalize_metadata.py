@@ -141,13 +141,16 @@ print(f"   {needs_count:,} rows flagged as needs_attention")
 # REMOVE BOOTSTRAP_SUPPORT COLUMN
 # ============================================================================
 
-print("\n4. Removing redundant bootstrap_support column...")
+print("\n4. Removing unused columns...")
 
-if 'bootstrap_support' in df.columns:
-    df = df.drop(columns=['bootstrap_support'])
-    print("  ✓ Removed bootstrap_support column")
+to_drop = ['bootstrap_support', 'placement_interpretation', 'bold_nuc']
+dropped = [c for c in to_drop if c in df.columns]
+if dropped:
+    df = df.drop(columns=dropped)
+    for c in dropped:
+        print(f"  ✓ Removed {c}")
 else:
-    print("  (bootstrap_support column not found)")
+    print("  (no columns to remove)")
 
 print(f"\n  Final column count: {len(df.columns)}")
 

@@ -165,9 +165,16 @@ def make_markdown_link(url, text):
     return f"[{text}]({url})"
 
 
+_NO_SPECIES = {'Unknown', 'Unidentified', 'Unknown_species', 'Unknown species', 'nan', ''}
+
+def _has_species_name(sp):
+    """Return True only if sp looks like a valid binomial (contains a space)."""
+    return bool(sp) and sp not in _NO_SPECIES and ' ' in sp
+
+
 def make_gbif_link(row):
     sp = str(row.get('species', '') or '')
-    if not sp or sp in ('Unknown', 'Unidentified', 'nan', ''):
+    if not _has_species_name(sp):
         return ''
     url = f"https://www.gbif.org/species/search?q={urllib.parse.quote(sp)}"
     return make_markdown_link(url, "🌍 GBIF map")
@@ -177,7 +184,7 @@ def make_goat_link(row):
     if not row.get('species_in_GOAT', False):
         return ''
     sp = str(row.get('species', '') or '')
-    if not sp or sp in ('Unknown', 'Unidentified', 'nan', ''):
+    if not _has_species_name(sp):
         return ''
     url = (
         f"https://goat.genomehubs.org/search?result=taxon&taxonomy=ncbi"
@@ -188,7 +195,7 @@ def make_goat_link(row):
 
 def make_nbn_link(row):
     sp = str(row.get('species', '') or '')
-    if not sp or sp in ('Unknown', 'Unidentified', 'nan', ''):
+    if not _has_species_name(sp):
         return ''
     url = f"https://species.nbnatlas.org/species/{urllib.parse.quote(sp)}"
     return make_markdown_link(url, "🇬🇧 NBN Atlas")
@@ -228,7 +235,7 @@ def make_bold_specimen_link(row):
     if not pid or pid in ('nan', ''):
         return ''
     url = f"https://portal.boldsystems.org/result?query={pid}[ids]"
-    return make_markdown_link(url, "🔬 Specimen")
+    return make_markdown_link(url, "🔬 This specimen")
 
 
 def make_bold_bioscan_link(row):
@@ -239,7 +246,7 @@ def make_bold_bioscan_link(row):
         f'https://portal.boldsystems.org/result'
         f'?query={b}[bin],%22Wellcome%20Sanger%20Institute%22[inst]'
     )
-    return make_markdown_link(url, "🪰 BIOSCAN")
+    return make_markdown_link(url, "🪰 All BIOSCAN specimens")
 
 
 # ---------------------------------------------------------------------------
@@ -350,10 +357,9 @@ def main():
         bioscan = pd.read_csv(bioscan_csv_path)
         print(f"   {len(bioscan):,} rows loaded")
 
-        # Bioscan specimen count: number of rows per BIN in the bioscan CSV
-        # Use a temp column name to avoid collision if the column already exists
+        # Bioscan specimen count: unique processids per BIN
         bin_counts = (
-            bioscan.groupby('bin_uri').size()
+            bioscan.groupby('bin_uri')['processid'].nunique()
             .reset_index(name='_bioscan_count_new')
         )
         # Restore BOLD: colon in the CSV's BIN column to match our restored values
@@ -370,12 +376,19 @@ def main():
         filled = (df['Bioscan specimen count'] > 0).sum()
         print(f"   Bioscan specimen count: {filled:,} rows with count > 0")
 
+        # Specimen ID: sampleid from bioscan CSV, keyed by processid
+        if 'sampleid' in bioscan.columns and 'processid' in df.columns:
+            sampleid_map = bioscan.set_index('processid')['sampleid'].to_dict()
+            df['Specimen ID'] = df['processid'].map(sampleid_map).fillna('')
+            matched = (df['Specimen ID'] != '').sum()
+            print(f"   Specimen ID: {matched:,} matched")
+
         # nuc: join per-specimen sequence for BLAST links
         if 'nuc' in bioscan.columns and 'processid' in df.columns:
             nuc_map = bioscan.set_index('processid')['nuc'].to_dict()
             df['bold_nuc'] = df['processid'].map(nuc_map)
             blast_ready = df['bold_nuc'].notna().sum()
-            print(f"   bold_nuc sequences: {blast_ready:,} matched")
+            print(f"   nuc sequences: {blast_ready:,} matched for BLAST links")
     else:
         print(f"\n3. Bioscan CSV not found at {bioscan_csv_path}; Bioscan specimen count and BLAST links will be empty")
         if 'Bioscan specimen count' not in df.columns:
@@ -434,6 +447,7 @@ def main():
 
     df['BLAST'] = df.apply(make_blast_link, axis=1)
     print(f"   BLAST: {(df['BLAST'] != '').sum():,} links")
+    df = df.drop(columns=['bold_nuc'], errors='ignore')
 
     df['BOLD_BIN'] = df.apply(make_bold_bin_link, axis=1)
     print(f"   BOLD_BIN: {(df['BOLD_BIN'] != '').sum():,} links")

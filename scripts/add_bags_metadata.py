@@ -197,7 +197,7 @@ for _, row in metadata.iterrows():
 
     bags_grades.append(grade)
     bin_quality_issues.append(derive_bin_quality_issue(grade, n))
-    n_bins_list.append(n if n > 0 else '')
+    n_bins_list.append(str(int(n)) if n > 0 else '')
     all_bins_list.append('; '.join(bins) if bins else '')
     uksi_name_matches.append(match_type)
     taxon_version_keys.append(tvk)
