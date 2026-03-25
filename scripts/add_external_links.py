@@ -216,7 +216,7 @@ def make_bold_bin_link(row):
     b = str(row.get('bin', '') or '')
     if not b or b in ('no_BIN', 'nan', ''):
         return ''
-    url = f"https://portal.boldsystems.org/result?query={b}[bins]"
+    url = f"https://portal.boldsystems.org/bin/{b}"
     return make_markdown_link(url, "🔷 BOLD BIN detail")
 
 
