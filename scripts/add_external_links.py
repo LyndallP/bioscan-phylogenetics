@@ -315,6 +315,7 @@ def main():
     print("\n2. Restoring BOLD: colon in BIN columns...")
     for col in ('bin', 'all_bins_for_species', 'all_bins'):
         if col in df.columns:
+            df[col] = df[col].astype(str).replace('nan', '')
             before = df[col].str.contains('BOLD:', na=False).sum()
             df[col] = df[col].str.replace(r'\bBOLD(?!:)', 'BOLD:', regex=True)
             after = df[col].str.contains('BOLD:', na=False).sum()
