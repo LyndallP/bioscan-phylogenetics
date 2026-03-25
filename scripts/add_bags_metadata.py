@@ -181,11 +181,8 @@ metadata['n_bins_for_species'] = n_bins_list
 metadata['all_bins']         = all_bins_list
 metadata['synonym']          = synonym_flags
 
-# needs_attention: flag rows that warrant manual review
-metadata['needs_attention'] = (
-    (metadata['category'] == 'Not_in_UKSI') |
-    (metadata['placement_quality'] == 'Low')
-)
+# needs_attention is left empty here — computed in finalize_metadata.py
+# (Step 15) once all columns including Bioscan specimen count are available.
 
 # ---------------------------------------------------------------------------
 # Save
