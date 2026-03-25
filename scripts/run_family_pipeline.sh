@@ -233,32 +233,16 @@ check_file "$QUERY_ALIGNED"
 log "Query sequences aligned: $QUERY_ALIGNED"
 
 # ---------------------------------------------------------------------------
-# Step 4c — Normalize BOLD BIN identifiers (remove colons for EPA-ng)
-# ---------------------------------------------------------------------------
-step "4c — Normalize BOLD BIN identifiers"
-
-ALIGNED_CLEAN_NORM="${INPUT_DIR}/${FAMILY}_aligned_clean_norm.fasta"
-TREE_NO_OG_NORM="${INPUT_DIR}/${FAMILY}_no_outgroup_norm.treefile"
-QUERY_ALIGNED_NORM="${INPUT_DIR}/query_sequences_aligned_norm.fasta"
-
-python3 scripts/normalize_ids.py "$ALIGNED_CLEAN"       "$ALIGNED_CLEAN_NORM" 2>&1 | tee -a "$LOG_FILE"
-python3 scripts/normalize_ids.py "$TREE_NO_OG"          "$TREE_NO_OG_NORM"    2>&1 | tee -a "$LOG_FILE"
-python3 scripts/normalize_ids.py "$QUERY_ALIGNED"       "$QUERY_ALIGNED_NORM" 2>&1 | tee -a "$LOG_FILE"
-
-check_file "$ALIGNED_CLEAN_NORM"
-check_file "$TREE_NO_OG_NORM"
-check_file "$QUERY_ALIGNED_NORM"
-log "IDs normalized for EPA-ng"
-
-# ---------------------------------------------------------------------------
 # Step 5 — Place query sequences with EPA-ng
+# (ID normalisation is handled by 03_clean_alignment.py and
+#  06_select_bin_representatives.py — no separate step needed)
 # ---------------------------------------------------------------------------
 step "5 — EPA-ng placement"
 
 epa-ng \
-    --tree "$TREE_NO_OG_NORM" \
-    --ref-msa "$ALIGNED_CLEAN_NORM" \
-    --query "$QUERY_ALIGNED_NORM" \
+    --tree "$TREE_NO_OG" \
+    --ref-msa "$ALIGNED_CLEAN" \
+    --query "$QUERY_ALIGNED" \
     --outdir "$EPA_DIR" \
     --model GTR+G \
     --redo 2>&1 | tee -a "$LOG_FILE"
