@@ -44,9 +44,14 @@ print(f"\n  Input:  {args.input}")
 print(f"  Family: {args.family}")
 print(f"  Output: {output_path}")
 
-# Load
+# Load — some rows may have embedded tabs in free-text fields (e.g. notes);
+# skip them rather than aborting.
 print(f"\n1. Loading {args.input}...")
-df = pd.read_csv(args.input, sep='\t', low_memory=False)
+try:
+    df = pd.read_csv(args.input, sep='\t', low_memory=False, on_bad_lines='skip')
+except TypeError:
+    # pandas < 1.3 uses the old parameter name
+    df = pd.read_csv(args.input, sep='\t', low_memory=False, error_bad_lines=False)
 print(f"   {len(df):,} total rows, {len(df.columns)} columns")
 
 if 'family' not in df.columns:
