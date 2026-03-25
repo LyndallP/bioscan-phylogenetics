@@ -301,9 +301,12 @@ Use `--skip-goat` to skip the API calls (faster; sets `species_in_GOAT=False`).
 python scripts/add_external_links.py \
     families/{Family}/output/metadata_05_subfamily.tsv \
     families/{Family}/output/metadata_06_links.tsv \
-    --family {Family}
-    # add --skip-goat if no internet access or for speed
+    --family {Family} \
+    --skip-goat
 ```
+
+The bioscan CSV is auto-detected at `families/{Family}/input/bioscan_{family}.csv`.
+Remove `--skip-goat` if you want GOAT API lookups (slower; requires internet).
 
 ---
 

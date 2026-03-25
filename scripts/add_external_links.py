@@ -20,7 +20,10 @@ Also renames:
   - bioscan_specimens -> Bioscan specimen count
 
 Usage:
-  python add_external_links.py <input.tsv> <output.tsv> --family Sciaridae [--bioscan-csv bioscan_Sciaridae.csv] [--skip-goat]
+  python add_external_links.py <input.tsv> <output.tsv> --family Sciaridae [--skip-goat]
+
+  The bioscan CSV is auto-detected at families/{Family}/input/bioscan_{family}.csv.
+  Override with --bioscan-csv if it lives elsewhere.
 """
 
 import argparse
@@ -277,14 +280,21 @@ def main():
     parser.add_argument("--family", required=True, help="Family name (e.g. Sciaridae)")
     parser.add_argument(
         "--bioscan-csv",
-        help="Path to bioscan_{family}.csv — used to compute Bioscan specimen count "
-             "(per bold_bin_uri) and add bold_nuc sequences for BLAST links"
+        help="Path to bioscan_{family}.csv. If omitted, defaults to "
+             "families/{Family}/input/bioscan_{family_lower}.csv"
     )
     parser.add_argument(
         "--skip-goat", action="store_true",
         help="Skip GOAT API check (sets species_in_GOAT=False for all rows)"
     )
     args = parser.parse_args()
+
+    # Auto-detect bioscan CSV from standard location if not explicitly given
+    import os
+    bioscan_csv_path = args.bioscan_csv
+    if not bioscan_csv_path:
+        family_lower = args.family.lower()
+        bioscan_csv_path = f"families/{args.family}/input/bioscan_{family_lower}.csv"
 
     print("=" * 70)
     print("ADDING EXTERNAL LINKS AND DERIVED COLUMNS")
@@ -323,9 +333,9 @@ def main():
     # ------------------------------------------------------------------
     # Bioscan specimen count + bold_nuc from bioscan CSV
     # ------------------------------------------------------------------
-    if args.bioscan_csv:
-        print(f"\n3. Loading bioscan CSV: {args.bioscan_csv}")
-        bioscan = pd.read_csv(args.bioscan_csv)
+    if os.path.exists(bioscan_csv_path):
+        print(f"\n3. Loading bioscan CSV: {bioscan_csv_path}")
+        bioscan = pd.read_csv(bioscan_csv_path)
         print(f"   {len(bioscan):,} rows loaded")
 
         # Bioscan specimen count: number of rows per BIN in the bioscan CSV
@@ -352,7 +362,7 @@ def main():
             blast_ready = df['bold_nuc'].notna().sum()
             print(f"   bold_nuc sequences: {blast_ready:,} matched")
     else:
-        print("\n3. No --bioscan-csv provided; Bioscan specimen count and BLAST links will be empty")
+        print(f"\n3. Bioscan CSV not found at {bioscan_csv_path}; Bioscan specimen count and BLAST links will be empty")
         if 'Bioscan specimen count' not in df.columns:
             df['Bioscan specimen count'] = 0
 
