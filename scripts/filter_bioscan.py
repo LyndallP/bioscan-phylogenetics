@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-Filter bioscan_all.csv to a single family and write to the family input folder.
+Filter bioscan_all.tsv to a single family and write a CSV to the family input folder.
 
-Reads a combined BIOSCAN CSV covering all families, filters rows where the
+Reads a combined BIOSCAN TSV covering all families, filters rows where the
 'bold_family' column matches the requested family name (case-insensitive),
-and writes the result to:
+and writes the result as CSV to:
 
     families/{Family}/input/bioscan_{family_lower}.csv
 
@@ -13,7 +13,7 @@ This file is then used by:
   - scripts/add_external_links.py             (Step 14, auto-detected)
 
 Usage:
-  python scripts/filter_bioscan.py bioscan_all.csv --family Sciaridae
+  python scripts/filter_bioscan.py bioscan_all.tsv --family Sciaridae
 
   Output path is auto-derived. Override with --output if needed.
 """
@@ -26,7 +26,7 @@ import pandas as pd
 parser = argparse.ArgumentParser(
     description="Filter bioscan_all.csv to a single family"
 )
-parser.add_argument("input", help="Path to bioscan_all.csv")
+parser.add_argument("input", help="Path to bioscan_all.tsv")
 parser.add_argument("--family", required=True, help="Family name (e.g. Sciaridae)")
 parser.add_argument(
     "--output",
@@ -46,7 +46,7 @@ print(f"  Output: {output_path}")
 
 # Load
 print(f"\n1. Loading {args.input}...")
-df = pd.read_csv(args.input, low_memory=False)
+df = pd.read_csv(args.input, sep='\t', low_memory=False)
 print(f"   {len(df):,} total rows, {len(df.columns)} columns")
 
 if 'bold_family' not in df.columns:

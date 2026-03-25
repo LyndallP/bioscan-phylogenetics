@@ -11,7 +11,7 @@ and producing an annotated metadata file for Taxonium visualisation.
 |------|--------|-------|
 | `{Family}.treefile` | BGE reference repo | Newick with bootstrap values; tips `Species\|BIN\|ProcessID` |
 | `{Family}_aligned.fasta` | BGE reference repo | MAFFT-aligned COI reference sequences |
-| `bioscan_all.csv` | UK BIOSCAN data | All-family BIOSCAN specimen CSV; filtered per family by Step 0 |
+| `bioscan_all.tsv` | UK BIOSCAN data | All-family BIOSCAN specimen TSV; filtered to CSV per family by Step 0 |
 | `filtered_gap_analysis.csv` | UKSI (full arthropod) | Must contain columns `taxon_name` and `species_status` |
 | DTOL FASTA files (optional) | Darwin Tree of Life | COI reads per specimen; only needed if adding DTOL sequences |
 
@@ -32,7 +32,7 @@ which is used by Step 3 and Step 14.
 
 ```bash
 python scripts/filter_bioscan.py \
-    bioscan_all.csv \
+    bioscan_all.tsv \
     --family {Family}
 ```
 
