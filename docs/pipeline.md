@@ -11,7 +11,7 @@ and producing an annotated metadata file for Taxonium visualisation.
 |------|--------|-------|
 | `{Family}.treefile` | BGE reference repo | Newick with bootstrap values; tips `Species\|BIN\|ProcessID` |
 | `{Family}_aligned.fasta` | BGE reference repo | MAFFT-aligned COI reference sequences |
-| `bioscan_{family}.fasta` | UK BIOSCAN data | BIOSCAN query sequences |
+| `bioscan_all.csv` | UK BIOSCAN data | All-family BIOSCAN specimen CSV; filtered per family by Step 0 |
 | `filtered_gap_analysis.csv` | UKSI (full arthropod) | Must contain columns `taxon_name` and `species_status` |
 | DTOL FASTA files (optional) | Darwin Tree of Life | COI reads per specimen; only needed if adding DTOL sequences |
 
@@ -23,6 +23,20 @@ export BOLD_API_KEY="your_key_here"
 ---
 
 ## Pipeline steps
+
+### Step 0 — Filter BIOSCAN data to family
+
+Filters `bioscan_all.csv` (all families) to the target family using the
+`bold_family` column. Produces `families/{Family}/input/bioscan_{family}.csv`
+which is used by Step 3 and Step 14.
+
+```bash
+python scripts/filter_bioscan.py \
+    bioscan_all.csv \
+    --family {Family}
+```
+
+---
 
 ### Step 1 — Prepare the reference tree
 
@@ -56,7 +70,7 @@ Classifies each BIN as `validation` (BIN in reference tree) or `novel` (new BIN)
 
 ```bash
 python scripts/06_select_bin_representatives.py \
-    bioscan_{family}.fasta \
+    families/{Family}/input/bioscan_{family}.csv \
     families/{Family}/input/{Family}_no_outgroup.treefile \
     families/{Family}/input/bioscan_representatives.fasta
 ```
