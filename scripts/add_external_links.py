@@ -257,16 +257,16 @@ def check_goat_presence_batch(species_list):
         if i % 10 == 0:
             print(f"  Checked GOAT {i}/{total} species...")
         try:
-            resp = requests.get(
-                "https://goat.genomehubs.org/api/v2/search",
-                params={
-                    'query': f'tax_name({sp})',
-                    'result': 'taxon',
-                    'taxonomy': 'ncbi',
-                    'size': 1,
-                },
-                timeout=10,
+            # Build URL directly: requests params-encoding converts () to %28%29
+            # which GOAT doesn't recognise. Keep parentheses literal, encode only
+            # the species name (spaces → %20).
+            encoded_sp = urllib.parse.quote(str(sp), safe='')
+            url = (
+                f"https://goat.genomehubs.org/api/v2/search"
+                f"?query=tax_name({encoded_sp})"
+                f"&result=taxon&taxonomy=ncbi&size=1"
             )
+            resp = requests.get(url, timeout=10)
             if resp.status_code == 200:
                 data = resp.json()
                 results[sp] = len(data.get('results', [])) > 0
