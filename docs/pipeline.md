@@ -260,6 +260,21 @@ python scripts/integrate_country_metadata.py \
 
 ---
 
+### Step 11b — Add BAGS metadata from gap analysis
+
+Populates `bags_grade`, `bin_quality_issue`, `n_bins_for_species`, `all_bins`,
+`needs_attention`, and new `synonym` column by matching each row to the gap
+analysis CSV. Matching priority: BIN → taxon_name → synonym.
+
+```bash
+python scripts/add_bags_metadata.py \
+    families/{Family}/output/metadata_03_country.tsv \
+    families/{Family}/input/{family}_gap_analysis.csv \
+    families/{Family}/output/metadata_03b_bags.tsv
+```
+
+---
+
 ### Step 12 — Add BIOSCAN specimen IDs and thumbnails
 
 Extracts process IDs from the `name` column and queries the BOLD CAOS API
@@ -267,7 +282,7 @@ for specimen images. Writes `ThumbnailURL` (renders in Taxonium).
 
 ```bash
 python scripts/add_bioscan_specimen_ids_LOCAL.py \
-    families/{Family}/output/metadata_03_country.tsv \
+    families/{Family}/output/metadata_03b_bags.tsv \
     families/{Family}/output/metadata_04_thumbnails.tsv
 ```
 
@@ -337,7 +352,12 @@ python scripts/finalize_metadata.py \
 | `placement_type` | 7 | `reference_tree` / `validation` / `novel` / `dtol` / `polytomy` |
 | `placement_interpretation` | 7 | Placeholder — populated manually post-analysis |
 | `epa_lwr_score` | 7 | EPA-ng likelihood weight ratio (placed specimens only) |
-| `all_bins_for_species` | 14 | All BINs for the species (renamed from `all_bins`) |
+| `bags_grade` | 11b | BAGS quality grade (A/B/C/D/E) from gap analysis |
+| `bin_quality_issue` | 11b | Derived from bags_grade: `clean`, `split_across_N_BINs`, `shares_BIN_with_other_species` |
+| `n_bins_for_species` | 11b | Number of BINs for this species in the gap analysis |
+| `all_bins_for_species` | 11b/14 | All BINs for the species; renamed from `all_bins` in step 14 |
+| `needs_attention` | 11b | True if category==Not_in_UKSI or placement_quality==Low |
+| `synonym` | 11b | True if species matched via synonym rather than primary name or BIN |
 | `in_uksi` | 11 | Bool — species in UKSI gap analysis |
 | `Bioscan specimen count` | 14 | Renamed from `bioscan_specimens` |
 | `geography` | 11 | Country from BOLD country data |
