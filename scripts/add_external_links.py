@@ -247,23 +247,35 @@ def make_bold_bioscan_link(row):
 # ---------------------------------------------------------------------------
 def check_goat_presence_batch(species_list):
     """Check GOAT presence for a list of unique species. Returns dict species->bool."""
+    import time
     results = {}
     total = len(species_list)
     for i, sp in enumerate(species_list, 1):
-        if not sp or pd.isna(sp) or str(sp) in ('Unknown', 'Unidentified', 'nan', ''):
+        if not sp or pd.isna(sp) or str(sp) in ('Unknown', 'Unidentified', 'Unknown species', 'nan', ''):
             results[sp] = False
             continue
-        print(f"  Checking GOAT {i}/{total}: {sp}", end='\r')
-        url = f"https://goat.genomehubs.org/api/v2/search?query=tax_name({urllib.parse.quote(str(sp))})"
+        if i % 10 == 0:
+            print(f"  Checked GOAT {i}/{total} species...")
         try:
-            resp = requests.get(url, timeout=10)
+            resp = requests.get(
+                "https://goat.genomehubs.org/api/v2/search",
+                params={
+                    'query': f'tax_name({sp})',
+                    'result': 'taxon',
+                    'taxonomy': 'ncbi',
+                    'size': 1,
+                },
+                timeout=10,
+            )
             if resp.status_code == 200:
                 data = resp.json()
                 results[sp] = len(data.get('results', [])) > 0
             else:
                 results[sp] = False
-        except Exception:
+        except Exception as e:
+            print(f"  Error checking {sp}: {e}")
             results[sp] = False
+        time.sleep(0.5)
     print()
     return results
 
