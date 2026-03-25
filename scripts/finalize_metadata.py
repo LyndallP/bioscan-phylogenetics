@@ -96,16 +96,42 @@ for cat, count in category_counts.items():
     print(f"    {cat}: {count:,}")
 
 # ============================================================================
+# CATEGORY
+# ============================================================================
+
+print("\n2. Computing category...")
+
+bioscan_count = pd.to_numeric(df.get('Bioscan specimen count', 0), errors='coerce').fillna(0)
+in_uksi = df.get('in_uksi', False).fillna(False).astype(bool)
+
+def assign_category(row):
+    pt = row.get('placement_type', '')
+    if pt == 'polytomy':
+        return 'UKSI_no_specimens'
+    if pt == 'dtol':
+        return 'DTOL'
+    # BIOSCAN and reference tree rows
+    count = pd.to_numeric(row.get('Bioscan specimen count', 0), errors='coerce') or 0
+    uksi  = bool(row.get('in_uksi', False))
+    if count > 0:
+        return 'BIOSCAN_collected' if uksi else 'Not_in_UKSI'
+    else:
+        return 'UKSI_no_specimens' if uksi else 'Europe_reference'
+
+df['category'] = df.apply(assign_category, axis=1)
+print(f"   category distribution:")
+for cat, count in df['category'].value_counts().items():
+    print(f"     {cat}: {count:,}")
+
+# ============================================================================
 # NEEDS_ATTENTION
 # ============================================================================
 
-print("\n2. Computing needs_attention...")
-
-bioscan_count = pd.to_numeric(df.get('Bioscan specimen count', 0), errors='coerce').fillna(0)
+print("\n3. Computing needs_attention...")
 
 df['needs_attention'] = (
     (df['category'] == 'Not_in_UKSI') |
-    (df['placement_quality'] == 'Low')
+    (df['placement_quality'] == 'Moderate to Low')
 )
 
 needs_count = df['needs_attention'].sum()
@@ -115,7 +141,7 @@ print(f"   {needs_count:,} rows flagged as needs_attention")
 # REMOVE BOOTSTRAP_SUPPORT COLUMN
 # ============================================================================
 
-print("\n3. Removing redundant bootstrap_support column...")
+print("\n4. Removing redundant bootstrap_support column...")
 
 if 'bootstrap_support' in df.columns:
     df = df.drop(columns=['bootstrap_support'])
