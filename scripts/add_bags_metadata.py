@@ -62,6 +62,16 @@ print(f"   {len(gap):,} species rows")
 # ---------------------------------------------------------------------------
 print("\n3. Building lookup tables...")
 
+# Normalise bin values in the metadata to BOLD: format before matching
+# (colon is stripped by 03_clean_alignment.py for Newick compatibility;
+#  it is not restored until add_external_links.py, so we do it here too)
+if 'bin' in metadata.columns:
+    metadata['bin'] = (
+        metadata['bin'].astype(str)
+        .str.replace(r'\bBOLD(?!:)', 'BOLD:', regex=True)
+        .replace('nan', '')
+    )
+
 def split_semicolon(val):
     """Split a semicolon-separated string, stripping whitespace."""
     raw = str(val or '').strip()
@@ -226,8 +236,12 @@ if (metadata['bags_grade'] != '').sum() > 0:
     for g, c in metadata['bags_grade'].value_counts().items():
         print(f"     {g}: {c:,}")
 print(f"\n   UKSI_name_match distribution:")
-for v, c in metadata['UKSI_name_match'].value_counts(dropna=False).items():
-    label = v if v != '' else '(BIN match)'
+match_counts = metadata['UKSI_name_match'].value_counts(dropna=False)
+for v, c in match_counts.items():
+    if v == '' or (isinstance(v, float) and pd.isna(v)):
+        label = f"(BIN match: {matched_by_bin:,} / unmatched: {unmatched:,})"
+    else:
+        label = v
     print(f"     {label}: {c:,}")
 
 print(f"\n✓ Saved {len(metadata):,} rows to: {output_path}")
