@@ -75,9 +75,20 @@ if len(result) == 0:
 # Ensure output directory exists
 os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
-# Save
+# Save BIN counts from the FULL file (all families) before filtering.
+# add_external_links.py uses this so Bioscan specimen count reflects the
+# total number of BIOSCAN specimens for each BIN across all families,
+# not just the specimens that happen to be labelled with this family.
+counts_path = os.path.join(os.path.dirname(output_path), 'bioscan_bin_counts.csv')
+if 'bin_uri' in df.columns:
+    bin_counts = df.groupby('bin_uri').size().reset_index(name='bioscan_specimen_count')
+    bin_counts.to_csv(counts_path, index=False)
+    print(f"\n3a. Saved all-family BIN counts to: {counts_path}")
+    print(f"    ({len(bin_counts):,} unique BINs across all families)")
+
+# Save family-filtered CSV
 result.to_csv(output_path, index=False)
-print(f"\n3. Saved {len(result):,} rows to: {output_path}")
+print(f"\n3b. Saved {len(result):,} rows to: {output_path}")
 
 if 'bin_uri' in result.columns:
     print(f"   Unique BINs: {result['bin_uri'].nunique():,}")

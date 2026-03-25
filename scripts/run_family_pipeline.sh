@@ -129,15 +129,21 @@ fi
 step "0 — Filter BIOSCAN data to family"
 
 BIOSCAN_CSV="${INPUT_DIR}/bioscan_${FAMILY_LOWER}.csv"
+BIN_COUNTS_CSV="${INPUT_DIR}/bioscan_bin_counts.csv"
 
-if [[ -f "$BIOSCAN_CSV" ]]; then
-    log "Bioscan CSV already exists, skipping: $BIOSCAN_CSV"
+# Re-run if either the family CSV or the all-family bin counts file is missing.
+# The bin counts file (written from the full bioscan_all.tsv) is required for
+# correct Bioscan specimen counts in Step 14.
+if [[ -f "$BIOSCAN_CSV" && -f "$BIN_COUNTS_CSV" ]]; then
+    log "Bioscan CSV and bin counts already exist, skipping Step 0"
 else
     python3 scripts/filter_bioscan.py \
         "$BIOSCAN_ALL_TSV" \
         --family "$FAMILY" 2>&1 | tee -a "$LOG_FILE"
     check_file "$BIOSCAN_CSV"
+    check_file "$BIN_COUNTS_CSV"
     log "Bioscan CSV created: $BIOSCAN_CSV"
+    log "All-family BIN counts saved: $BIN_COUNTS_CSV"
 fi
 
 # ---------------------------------------------------------------------------

@@ -357,18 +357,26 @@ def main():
         bioscan = pd.read_csv(bioscan_csv_path)
         print(f"   {len(bioscan):,} rows loaded")
 
-        # Bioscan specimen count: unique processids per BIN
-        bin_counts = (
-            bioscan.groupby('bin_uri')['processid'].nunique()
-            .reset_index(name='_bioscan_count_new')
-        )
-        # Restore BOLD: colon in the CSV's BIN column to match our restored values
-        bin_counts['bin_uri'] = bin_counts['bin_uri'].str.replace(
+        # Bioscan specimen count: total specimens per BIN across ALL families.
+        # Prefer the all-family bin counts file written by filter_bioscan.py
+        # (bioscan_bin_counts.csv); fall back to counting within the family CSV.
+        counts_path = os.path.join(os.path.dirname(bioscan_csv_path), 'bioscan_bin_counts.csv')
+        if os.path.exists(counts_path):
+            bin_counts = pd.read_csv(counts_path)
+            print(f"   Using all-family BIN counts from: {counts_path}")
+        else:
+            bin_counts = (
+                bioscan.groupby('bin_uri').size()
+                .reset_index(name='bioscan_specimen_count')
+            )
+            print(f"   WARNING: {counts_path} not found; counting within family CSV only")
+        bin_counts['bin_uri'] = bin_counts['bin_uri'].astype(str).str.replace(
             r'\bBOLD(?!:)', 'BOLD:', regex=True
         )
         df = df.drop(columns=['Bioscan specimen count'], errors='ignore')
         df = df.merge(
-            bin_counts, left_on='bin', right_on='bin_uri', how='left'
+            bin_counts.rename(columns={'bioscan_specimen_count': '_bioscan_count_new'}),
+            left_on='bin', right_on='bin_uri', how='left'
         )
         df = df.drop(columns=['bin_uri'])
         df['Bioscan specimen count'] = df['_bioscan_count_new'].fillna(0).astype(int)
