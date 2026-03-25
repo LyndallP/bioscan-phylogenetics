@@ -357,7 +357,8 @@ python scripts/finalize_metadata.py \
 | `n_bins_for_species` | 11b | Number of BINs for this species in the gap analysis |
 | `all_bins_for_species` | 11b/14 | All BINs for the species; renamed from `all_bins` in step 14 |
 | `needs_attention` | 15 | True if category==Not_in_UKSI or placement_quality==Low; computed last so all columns are available |
-| `synonym` | 11b | True if species matched via synonym rather than primary name or BIN |
+| `UKSI_name_match` | 11b | How the species matched: `''`=BIN match, `accepted`=taxon_name, `synonym`=synonyms column, `other name`=other_names column |
+| `taxon_version_key` | 11b | UKSI taxon_version_key from the matched gap analysis row |
 | `in_uksi` | 11 | Bool — species in UKSI gap analysis |
 | `Bioscan specimen count` | 14 | Renamed from `bioscan_specimens` |
 | `geography` | 11 | Country from BOLD country data |

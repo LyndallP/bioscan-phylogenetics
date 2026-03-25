@@ -7,16 +7,24 @@ Populates:
   - bin_quality_issue   : description derived from bags_grade
   - n_bins_for_species  : number of BINs for this species in the gap analysis
   - all_bins            : semicolon-separated list of BINs for this species
-  - needs_attention     : True if category==Not_in_UKSI or placement_quality==Low
-  - synonym             : True if the match was via a synonym rather than the
-                          primary taxon_name or BIN
+  - UKSI_name_match     : how the species was matched:
+                            ''           - matched by BIN (no name lookup needed)
+                            'accepted'   - matched via taxon_name column
+                            'synonym'    - matched via synonyms column
+                            'other name' - matched via other_names column
+  - taxon_version_key   : UKSI taxon_version_key from the matched gap analysis row
 
 Matching priority (per metadata row):
-  1. BIN  — metadata 'bin' found in gap analysis 'bin_uris' (any of the
-             semicolon-separated values)
-  2. Name — metadata 'species' matches gap analysis 'taxon_name' exactly
-  3. Synonym — metadata 'species' found in gap analysis 'synonyms' field
-               (semicolon-separated; any entry)
+  1. BIN       — metadata 'bin' found in gap analysis 'bin_uris'
+                 (any semicolon-separated value)
+  2. accepted  — metadata 'species' == gap analysis 'taxon_name'
+  3. synonym   — metadata 'species' found in gap analysis 'synonyms'
+                 (semicolon-separated)
+  4. other name— metadata 'species' found in gap analysis 'other_names'
+                 (semicolon-separated)
+
+needs_attention is NOT set here — computed in finalize_metadata.py (Step 15)
+once all columns including Bioscan specimen count are available.
 
 Usage:
   python scripts/add_bags_metadata.py \\
@@ -50,20 +58,22 @@ gap = pd.read_csv(gap_path, low_memory=False)
 print(f"   {len(gap):,} species rows")
 
 # ---------------------------------------------------------------------------
-# Build lookup tables from gap analysis
+# Build lookup tables
 # ---------------------------------------------------------------------------
 print("\n3. Building lookup tables...")
 
-# BIN → gap row index  (one BIN can map to exactly one species row)
+def split_semicolon(val):
+    """Split a semicolon-separated string, stripping whitespace."""
+    raw = str(val or '').strip()
+    if not raw or raw == 'nan':
+        return []
+    return [v.strip() for v in raw.split(';') if v.strip()]
+
+# BIN → gap row index (bin_uris is semicolon-separated; each BIN maps to one row)
 bin_to_idx = {}
 for idx, row in gap.iterrows():
-    raw = str(row.get('bin_uris', '') or '')
-    if not raw or raw == 'nan':
-        continue
-    for b in raw.split(';'):
-        b = b.strip()
-        if b:
-            bin_to_idx[b] = idx
+    for b in split_semicolon(row.get('bin_uris', '')):
+        bin_to_idx[b] = idx
 
 # taxon_name → gap row index
 name_to_idx = {}
@@ -72,20 +82,22 @@ for idx, row in gap.iterrows():
     if name and name != 'nan':
         name_to_idx[name] = idx
 
-# synonym → gap row index  (split each synonyms cell by ';')
+# synonyms → gap row index
 synonym_to_idx = {}
 for idx, row in gap.iterrows():
-    raw = str(row.get('synonyms', '') or '')
-    if not raw or raw == 'nan':
-        continue
-    for syn in raw.split(';'):
-        syn = syn.strip()
-        if syn:
-            synonym_to_idx[syn] = idx
+    for syn in split_semicolon(row.get('synonyms', '')):
+        synonym_to_idx[syn] = idx
+
+# other_names → gap row index
+other_name_to_idx = {}
+for idx, row in gap.iterrows():
+    for other in split_semicolon(row.get('other_names', '')):
+        other_name_to_idx[other] = idx
 
 print(f"   {len(bin_to_idx):,} BIN entries")
 print(f"   {len(name_to_idx):,} taxon_name entries")
 print(f"   {len(synonym_to_idx):,} synonym entries")
+print(f"   {len(other_name_to_idx):,} other_name entries")
 
 # ---------------------------------------------------------------------------
 # Helper: derive bin_quality_issue from bags_grade + n_bins
@@ -101,46 +113,57 @@ def derive_bin_quality_issue(bags_grade, n_bins):
     return "unknown"
 
 # ---------------------------------------------------------------------------
-# Match each metadata row and populate fields
+# Match each metadata row
 # ---------------------------------------------------------------------------
 print("\n4. Matching metadata rows to gap analysis...")
 
-bags_grades       = []
-bin_quality_issues = []
-n_bins_list       = []
-all_bins_list     = []
-synonym_flags     = []
+bags_grades         = []
+bin_quality_issues  = []
+n_bins_list         = []
+all_bins_list       = []
+uksi_name_matches   = []
+taxon_version_keys  = []
 
-matched_by_bin  = 0
-matched_by_name = 0
-matched_by_syn  = 0
-unmatched       = 0
+matched_by_bin       = 0
+matched_by_name      = 0
+matched_by_synonym   = 0
+matched_by_othername = 0
+unmatched            = 0
 
 for _, row in metadata.iterrows():
     bin_val     = str(row.get('bin', '') or '').strip()
     species_val = str(row.get('species', '') or '').strip()
 
-    gap_idx  = None
-    is_syn   = False
+    gap_idx    = None
+    match_type = ''   # '', 'accepted', 'synonym', 'other name'
 
     # Priority 1: BIN match
     if bin_val and bin_val not in ('no_BIN', 'nan', ''):
         gap_idx = bin_to_idx.get(bin_val)
         if gap_idx is not None:
             matched_by_bin += 1
+            match_type = ''
 
-    # Priority 2: exact taxon_name match
+    # Priority 2: taxon_name match
     if gap_idx is None and species_val and species_val not in ('nan', ''):
         gap_idx = name_to_idx.get(species_val)
         if gap_idx is not None:
             matched_by_name += 1
+            match_type = 'accepted'
 
     # Priority 3: synonym match
     if gap_idx is None and species_val and species_val not in ('nan', ''):
         gap_idx = synonym_to_idx.get(species_val)
         if gap_idx is not None:
-            matched_by_syn += 1
-            is_syn = True
+            matched_by_synonym += 1
+            match_type = 'synonym'
+
+    # Priority 4: other_names match
+    if gap_idx is None and species_val and species_val not in ('nan', ''):
+        gap_idx = other_name_to_idx.get(species_val)
+        if gap_idx is not None:
+            matched_by_othername += 1
+            match_type = 'other name'
 
     if gap_idx is None:
         unmatched += 1
@@ -148,41 +171,44 @@ for _, row in metadata.iterrows():
         bin_quality_issues.append('')
         n_bins_list.append('')
         all_bins_list.append('')
-        synonym_flags.append(False)
+        uksi_name_matches.append('')
+        taxon_version_keys.append('')
         continue
 
-    gap_row   = gap.loc[gap_idx]
-    grade     = str(gap_row.get('bags_grade', '') or '').strip()
-    raw_bins  = str(gap_row.get('bin_uris', '') or '').strip()
+    gap_row = gap.loc[gap_idx]
+    grade   = str(gap_row.get('bags_grade', '') or '').strip()
+    tvk     = str(gap_row.get('taxon_version_key', '') or '').strip()
+    if tvk == 'nan':
+        tvk = ''
 
-    if raw_bins == 'nan':
-        raw_bins = ''
-
-    bins      = [b.strip() for b in raw_bins.split(';') if b.strip()] if raw_bins else []
-    n         = len(bins)
+    raw_bins = str(gap_row.get('bin_uris', '') or '').strip()
+    bins     = split_semicolon(raw_bins)
+    n        = len(bins)
 
     bags_grades.append(grade)
     bin_quality_issues.append(derive_bin_quality_issue(grade, n))
     n_bins_list.append(n if n > 0 else '')
     all_bins_list.append('; '.join(bins) if bins else '')
-    synonym_flags.append(is_syn)
+    uksi_name_matches.append(match_type)
+    taxon_version_keys.append(tvk)
 
-print(f"   Matched by BIN:      {matched_by_bin:,}")
-print(f"   Matched by name:     {matched_by_name:,}")
-print(f"   Matched by synonym:  {matched_by_syn:,}")
-print(f"   Unmatched:           {unmatched:,}")
+print(f"   Matched by BIN:        {matched_by_bin:,}")
+print(f"   Matched by taxon_name: {matched_by_name:,}")
+print(f"   Matched by synonym:    {matched_by_synonym:,}")
+print(f"   Matched by other_name: {matched_by_othername:,}")
+print(f"   Unmatched:             {unmatched:,}")
 
 # ---------------------------------------------------------------------------
 # Write columns into metadata (overwrite the empty placeholders)
 # ---------------------------------------------------------------------------
-metadata['bags_grade']       = bags_grades
+metadata['bags_grade']        = bags_grades
 metadata['bin_quality_issue'] = bin_quality_issues
 metadata['n_bins_for_species'] = n_bins_list
-metadata['all_bins']         = all_bins_list
-metadata['synonym']          = synonym_flags
+metadata['all_bins']          = all_bins_list
+metadata['UKSI_name_match']   = uksi_name_matches
+metadata['taxon_version_key'] = taxon_version_keys
 
-# needs_attention is left empty here — computed in finalize_metadata.py
-# (Step 15) once all columns including Bioscan specimen count are available.
+# needs_attention is computed in finalize_metadata.py (Step 15)
 
 # ---------------------------------------------------------------------------
 # Save
@@ -194,12 +220,15 @@ print(f"   bags_grade non-empty:        {(metadata['bags_grade'] != '').sum():,}
 print(f"   bin_quality_issue non-empty: {(metadata['bin_quality_issue'] != '').sum():,}")
 print(f"   n_bins_for_species non-empty:{(metadata['n_bins_for_species'] != '').sum():,}")
 print(f"   all_bins non-empty:          {(metadata['all_bins'] != '').sum():,}")
-print(f"   synonym == True:             {metadata['synonym'].sum():,}")
-print(f"   needs_attention == True:     {metadata['needs_attention'].sum():,}")
+print(f"   taxon_version_key non-empty: {(metadata['taxon_version_key'] != '').sum():,}")
 if (metadata['bags_grade'] != '').sum() > 0:
     print(f"\n   bags_grade distribution:")
     for g, c in metadata['bags_grade'].value_counts().items():
         print(f"     {g}: {c:,}")
+print(f"\n   UKSI_name_match distribution:")
+for v, c in metadata['UKSI_name_match'].value_counts(dropna=False).items():
+    label = v if v != '' else '(BIN match)'
+    print(f"     {label}: {c:,}")
 
 print(f"\n✓ Saved {len(metadata):,} rows to: {output_path}")
 print("=" * 60 + "\n")
