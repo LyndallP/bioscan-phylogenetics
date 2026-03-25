@@ -20,7 +20,7 @@ Also renames:
   - bioscan_specimens -> Bioscan specimen count
 
 Usage:
-  python add_external_links.py <input.tsv> <output.tsv> --family Sciaridae [--skip-goat]
+  python add_external_links.py <input.tsv> <output.tsv> --family Sciaridae [--bioscan-csv bioscan_Sciaridae.csv] [--skip-goat]
 """
 
 import argparse
@@ -216,8 +216,8 @@ def make_bold_bin_link(row):
     b = str(row.get('bin', '') or '')
     if not b or b in ('no_BIN', 'nan', ''):
         return ''
-    url = f"https://portal.boldsystems.org/bin/{b}"
-    return make_markdown_link(url, "🔷 BOLD BIN detail")
+    url = f"http://www.boldsystems.org/index.php/Public_BarcodeCluster?clusteruri={b}"
+    return make_markdown_link(url, "🔷 BIN")
 
 
 def make_bold_specimen_link(row):
@@ -225,24 +225,18 @@ def make_bold_specimen_link(row):
     if not pid or pid in ('nan', ''):
         return ''
     url = f"https://portal.boldsystems.org/result?query={pid}[ids]"
-    return make_markdown_link(url, "🪰 This specimen")
+    return make_markdown_link(url, "🔬 Specimen")
 
 
 def make_bold_bioscan_link(row):
     b = str(row.get('bin', '') or '')
     if not b or b in ('no_BIN', 'nan', ''):
         return ''
-    count = row.get('Bioscan specimen count', 0)
-    try:
-        if int(count) == 0:
-            return ''
-    except (ValueError, TypeError):
-        return ''
     url = (
         f'https://portal.boldsystems.org/result'
         f'?query={b}[bin],%22Wellcome%20Sanger%20Institute%22[inst]'
     )
-    return make_markdown_link(url, "All BIOSCAN specimens")
+    return make_markdown_link(url, "🪰 BIOSCAN")
 
 
 # ---------------------------------------------------------------------------
@@ -281,6 +275,11 @@ def main():
     parser.add_argument("input", help="Input metadata TSV")
     parser.add_argument("output", help="Output metadata TSV")
     parser.add_argument("--family", required=True, help="Family name (e.g. Sciaridae)")
+    parser.add_argument(
+        "--bioscan-csv",
+        help="Path to bioscan_{family}.csv — used to compute Bioscan specimen count "
+             "(per bold_bin_uri) and add bold_nuc sequences for BLAST links"
+    )
     parser.add_argument(
         "--skip-goat", action="store_true",
         help="Skip GOAT API check (sets species_in_GOAT=False for all rows)"
@@ -322,15 +321,51 @@ def main():
             print(f"   {col}: {after - before:,} values restored")
 
     # ------------------------------------------------------------------
+    # Bioscan specimen count + bold_nuc from bioscan CSV
+    # ------------------------------------------------------------------
+    if args.bioscan_csv:
+        print(f"\n3. Loading bioscan CSV: {args.bioscan_csv}")
+        bioscan = pd.read_csv(args.bioscan_csv)
+        print(f"   {len(bioscan):,} rows loaded")
+
+        # Bioscan specimen count: number of rows per BIN in the bioscan CSV
+        bin_counts = (
+            bioscan.groupby('bold_bin_uri').size()
+            .reset_index(name='Bioscan specimen count')
+        )
+        # Restore BOLD: colon in the CSV's BIN column to match our restored values
+        bin_counts['bold_bin_uri'] = bin_counts['bold_bin_uri'].str.replace(
+            r'\bBOLD(?!:)', 'BOLD:', regex=True
+        )
+        df = df.merge(
+            bin_counts, left_on='bin', right_on='bold_bin_uri', how='left'
+        )
+        df = df.drop(columns=['bold_bin_uri'])
+        df['Bioscan specimen count'] = df['Bioscan specimen count'].fillna(0).astype(int)
+        filled = (df['Bioscan specimen count'] > 0).sum()
+        print(f"   Bioscan specimen count: {filled:,} rows with count > 0")
+
+        # bold_nuc: join per-specimen sequence for BLAST links
+        if 'bold_nuc' in bioscan.columns and 'processid' in df.columns:
+            nuc_map = bioscan.set_index('bold_processid')['bold_nuc'].to_dict()
+            df['bold_nuc'] = df['processid'].map(nuc_map)
+            blast_ready = df['bold_nuc'].notna().sum()
+            print(f"   bold_nuc sequences: {blast_ready:,} matched")
+    else:
+        print("\n3. No --bioscan-csv provided; Bioscan specimen count and BLAST links will be empty")
+        if 'Bioscan specimen count' not in df.columns:
+            df['Bioscan specimen count'] = 0
+
+    # ------------------------------------------------------------------
     # Add family column
     # ------------------------------------------------------------------
-    print(f"\n3. Adding family column: {args.family}")
+    print(f"\n4. Adding family column: {args.family}")
     df['family'] = args.family
 
     # ------------------------------------------------------------------
     # geography_broad
     # ------------------------------------------------------------------
-    print("\n4. Creating geography_broad column...")
+    print("\n5. Creating geography_broad column...")
     df['geography_broad'] = df['geography'].map(GEOGRAPHY_BROAD_MAP).fillna('Other')
     unmapped = df[df['geography_broad'] == 'Other']['geography'].dropna().unique()
     unmapped = [v for v in unmapped if v not in ('', 'Unknown', 'nan')]
@@ -344,10 +379,10 @@ def main():
     # species_in_GOAT
     # ------------------------------------------------------------------
     if args.skip_goat:
-        print("\n5. Skipping GOAT check (--skip-goat)")
+        print("\n6. Skipping GOAT check (--skip-goat)")
         df['species_in_GOAT'] = False
     else:
-        print("\n5. Checking GOAT presence (per unique species)...")
+        print("\n6. Checking GOAT presence (per unique species)...")
         unique_species = df['species'].dropna().unique().tolist()
         print(f"   {len(unique_species):,} unique species to check")
         goat_map = check_goat_presence_batch(unique_species)
@@ -358,7 +393,7 @@ def main():
     # ------------------------------------------------------------------
     # External link columns
     # ------------------------------------------------------------------
-    print("\n6. Creating external link columns...")
+    print("\n7. Creating external link columns...")
 
     df['GBIF'] = df.apply(make_gbif_link, axis=1)
     print(f"   GBIF: {(df['GBIF'] != '').sum():,} links")
