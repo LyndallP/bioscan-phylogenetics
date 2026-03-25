@@ -236,13 +236,11 @@ if (metadata['bags_grade'] != '').sum() > 0:
     for g, c in metadata['bags_grade'].value_counts().items():
         print(f"     {g}: {c:,}")
 print(f"\n   UKSI_name_match distribution:")
-match_counts = metadata['UKSI_name_match'].value_counts(dropna=False)
-for v, c in match_counts.items():
-    if v == '' or (isinstance(v, float) and pd.isna(v)):
-        label = f"(BIN match: {matched_by_bin:,} / unmatched: {unmatched:,})"
-    else:
-        label = v
-    print(f"     {label}: {c:,}")
+print(f"     BIN match:  {matched_by_bin:,}")
+print(f"     accepted:   {matched_by_name:,}")
+print(f"     synonym:    {matched_by_synonym:,}")
+print(f"     other name: {matched_by_othername:,}")
+print(f"     unmatched:  {unmatched:,}")
 
 print(f"\n✓ Saved {len(metadata):,} rows to: {output_path}")
 print("=" * 60 + "\n")
