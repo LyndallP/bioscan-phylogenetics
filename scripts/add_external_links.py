@@ -353,26 +353,26 @@ def main():
         # Bioscan specimen count: number of rows per BIN in the bioscan CSV
         # Use a temp column name to avoid collision if the column already exists
         bin_counts = (
-            bioscan.groupby('bold_bin_uri').size()
+            bioscan.groupby('bin_uri').size()
             .reset_index(name='_bioscan_count_new')
         )
         # Restore BOLD: colon in the CSV's BIN column to match our restored values
-        bin_counts['bold_bin_uri'] = bin_counts['bold_bin_uri'].str.replace(
+        bin_counts['bin_uri'] = bin_counts['bin_uri'].str.replace(
             r'\bBOLD(?!:)', 'BOLD:', regex=True
         )
         df = df.drop(columns=['Bioscan specimen count'], errors='ignore')
         df = df.merge(
-            bin_counts, left_on='bin', right_on='bold_bin_uri', how='left'
+            bin_counts, left_on='bin', right_on='bin_uri', how='left'
         )
-        df = df.drop(columns=['bold_bin_uri'])
+        df = df.drop(columns=['bin_uri'])
         df['Bioscan specimen count'] = df['_bioscan_count_new'].fillna(0).astype(int)
         df = df.drop(columns=['_bioscan_count_new'])
         filled = (df['Bioscan specimen count'] > 0).sum()
         print(f"   Bioscan specimen count: {filled:,} rows with count > 0")
 
-        # bold_nuc: join per-specimen sequence for BLAST links
-        if 'bold_nuc' in bioscan.columns and 'processid' in df.columns:
-            nuc_map = bioscan.set_index('bold_processid')['bold_nuc'].to_dict()
+        # nuc: join per-specimen sequence for BLAST links
+        if 'nuc' in bioscan.columns and 'processid' in df.columns:
+            nuc_map = bioscan.set_index('processid')['nuc'].to_dict()
             df['bold_nuc'] = df['processid'].map(nuc_map)
             blast_ready = df['bold_nuc'].notna().sum()
             print(f"   bold_nuc sequences: {blast_ready:,} matched")

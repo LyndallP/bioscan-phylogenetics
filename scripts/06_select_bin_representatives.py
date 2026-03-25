@@ -14,13 +14,13 @@ def select_representatives(bioscan_file, tree_file, output_fasta):
     """
     print(f"Loading BIOSCAN data: {bioscan_file}")
     bioscan = pd.read_csv(bioscan_file)
-    
+
     print(f"Total BIOSCAN records: {len(bioscan)}")
-    print(f"Unique BINs: {bioscan['bold_bin_uri'].nunique()}")
-    
+    print(f"Unique BINs: {bioscan['bin_uri'].nunique()}")
+
     # Calculate sequence quality metrics
-    bioscan['seq_length'] = bioscan['bold_nuc'].fillna('').str.len()
-    bioscan['n_ambiguous'] = bioscan['bold_nuc'].fillna('').str.count('N')
+    bioscan['seq_length'] = bioscan['nuc'].fillna('').str.len()
+    bioscan['n_ambiguous'] = bioscan['nuc'].fillna('').str.count('N')
     bioscan['quality_score'] = bioscan['seq_length'] - (bioscan['n_ambiguous'] * 10)
     
     # Extract process IDs from reference tree to exclude
@@ -35,14 +35,14 @@ def select_representatives(bioscan_file, tree_file, output_fasta):
     print(f"Reference tree contains {len(ref_processids)} specimens")
     
     # Exclude reference tree specimens from selection
-    bioscan_filtered = bioscan[~bioscan['bold_processid'].isin(ref_processids)]
+    bioscan_filtered = bioscan[~bioscan['processid'].isin(ref_processids)]
     excluded_count = len(bioscan) - len(bioscan_filtered)
     print(f"Excluded {excluded_count} specimens already in reference tree")
     
     # Select best sequence per BIN from filtered data
     representatives = bioscan_filtered.sort_values(
         'quality_score', ascending=False
-    ).groupby('bold_bin_uri').first().reset_index()
+    ).groupby('bin_uri').first().reset_index()
     
     print(f"\nSelected {len(representatives)} representatives")
     
@@ -63,10 +63,10 @@ def select_representatives(bioscan_file, tree_file, output_fasta):
     print(f"Sample tree BINs: {list(tree_bins)[:5]}")
     
     # Check BIOSCAN BIN format
-    print(f"Sample BIOSCAN BINs: {representatives['bold_bin_uri'].head().tolist()}")
+    print(f"Sample BIOSCAN BINs: {representatives['bin_uri'].head().tolist()}")
     
     # Mark which representatives are in tree vs. not
-    representatives['in_reference_tree'] = representatives['bold_bin_uri'].isin(tree_bins)
+    representatives['in_reference_tree'] = representatives['bin_uri'].isin(tree_bins)
     representatives['placement_type'] = representatives['in_reference_tree'].map({
         True: 'validation',
         False: 'novel'
@@ -84,20 +84,20 @@ def select_representatives(bioscan_file, tree_file, output_fasta):
     with open(output_fasta, 'w') as f:
         for idx, row in representatives.iterrows():
             # Format: BIN|species|processID (remove colon for tree compatibility)
-            bin_clean = row['bold_bin_uri'].replace('BOLD:', 'BOLD')
-            species = row.get('bold_species', 'Unknown_species')
+            bin_clean = row['bin_uri'].replace('BOLD:', 'BOLD')
+            species = row.get('species', 'Unknown_species')
             if pd.isna(species) or species == '':
                 species = 'Unknown_species'
-            process_id = row['bold_processid']
+            process_id = row['processid']
             
             header = f">{species}|{bin_clean}|{process_id}"
-            sequence = row['bold_nuc']
+            sequence = row['nuc']
             
             f.write(f"{header}\n{sequence}\n")
     
     # Save representative info
     info_file = output_fasta.replace('.fasta', '_info.csv')
-    representatives[['bold_bin_uri', 'bold_processid', 'bold_species', 
+    representatives[['bin_uri', 'processid', 'species', 
                      'seq_length', 'quality_score', 'in_reference_tree', 
                      'placement_type']].to_csv(info_file, index=False)
     print(f"Representative info saved to: {info_file}")

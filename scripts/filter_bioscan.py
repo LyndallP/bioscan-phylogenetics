@@ -49,19 +49,19 @@ print(f"\n1. Loading {args.input}...")
 df = pd.read_csv(args.input, sep='\t', low_memory=False)
 print(f"   {len(df):,} total rows, {len(df.columns)} columns")
 
-if 'bold_family' not in df.columns:
-    print(f"\nERROR: 'bold_family' column not found. Available columns:")
+if 'family' not in df.columns:
+    print(f"\nERROR: 'family' column not found. Available columns:")
     print(f"  {', '.join(df.columns.tolist())}")
     sys.exit(1)
 
 # Filter
-print(f"\n2. Filtering to bold_family == '{args.family}' (case-insensitive)...")
-mask   = df['bold_family'].str.lower() == family_lower
+print(f"\n2. Filtering to family == '{args.family}' (case-insensitive)...")
+mask   = df['family'].str.lower() == family_lower
 result = df[mask].copy()
-print(f"   {len(result):,} rows kept from {df['bold_family'].nunique()} families")
+print(f"   {len(result):,} rows kept from {df['family'].nunique()} families")
 
 if len(result) == 0:
-    available = sorted(df['bold_family'].dropna().unique().tolist())
+    available = sorted(df['family'].dropna().unique().tolist())
     print(f"\nWARNING: No rows matched. Available families:")
     for f in available:
         print(f"   {f}")
@@ -74,9 +74,9 @@ os.makedirs(os.path.dirname(output_path), exist_ok=True)
 result.to_csv(output_path, index=False)
 print(f"\n3. Saved {len(result):,} rows to: {output_path}")
 
-if 'bold_bin_uri' in result.columns:
-    print(f"   Unique BINs: {result['bold_bin_uri'].nunique():,}")
-if 'bold_processid' in result.columns:
-    print(f"   Unique process IDs: {result['bold_processid'].nunique():,}")
+if 'bin_uri' in result.columns:
+    print(f"   Unique BINs: {result['bin_uri'].nunique():,}")
+if 'processid' in result.columns:
+    print(f"   Unique process IDs: {result['processid'].nunique():,}")
 
 print("\n" + "=" * 60 + "\n")
