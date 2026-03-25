@@ -339,19 +339,22 @@ def main():
         print(f"   {len(bioscan):,} rows loaded")
 
         # Bioscan specimen count: number of rows per BIN in the bioscan CSV
+        # Use a temp column name to avoid collision if the column already exists
         bin_counts = (
             bioscan.groupby('bold_bin_uri').size()
-            .reset_index(name='Bioscan specimen count')
+            .reset_index(name='_bioscan_count_new')
         )
         # Restore BOLD: colon in the CSV's BIN column to match our restored values
         bin_counts['bold_bin_uri'] = bin_counts['bold_bin_uri'].str.replace(
             r'\bBOLD(?!:)', 'BOLD:', regex=True
         )
+        df = df.drop(columns=['Bioscan specimen count'], errors='ignore')
         df = df.merge(
             bin_counts, left_on='bin', right_on='bold_bin_uri', how='left'
         )
         df = df.drop(columns=['bold_bin_uri'])
-        df['Bioscan specimen count'] = df['Bioscan specimen count'].fillna(0).astype(int)
+        df['Bioscan specimen count'] = df['_bioscan_count_new'].fillna(0).astype(int)
+        df = df.drop(columns=['_bioscan_count_new'])
         filled = (df['Bioscan specimen count'] > 0).sum()
         print(f"   Bioscan specimen count: {filled:,} rows with count > 0")
 
