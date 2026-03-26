@@ -1,0 +1,37 @@
+name: Generate Taxonium Index
+
+# Runs whenever tree/metadata files are added to data/ or config changes.
+# Re-generates index.html and commits it back to master.
+# GitHub Pages must be enabled: Settings → Pages → Source: master branch / root.
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "data/**"
+      - "config.json"
+  workflow_dispatch:   # allow manual trigger from Actions tab
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Generate index.html
+        run: python generate_index.py
+
+      - name: Commit updated index.html
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Auto-generate index.html [skip ci]"
+          file_pattern: index.html

@@ -424,3 +424,32 @@ echo "  Final tree:     $FINAL_TREE"
 echo "  Final metadata: $FINAL_META"
 echo "  Log:            $LOG_FILE"
 echo ""
+echo "------------------------------------------------------------"
+echo "  NEXT STEP: Upload outputs to taxonium_for_bscan"
+echo "------------------------------------------------------------"
+echo ""
+echo "  Copy the two output files into the data/${FAMILY}/ folder"
+echo "  of your taxonium_for_bscan repo:"
+echo ""
+echo "    mkdir -p /path/to/taxonium_for_bscan/data/${FAMILY}"
+echo "    cp ${FINAL_TREE}  /path/to/taxonium_for_bscan/data/${FAMILY}/"
+echo "    cp ${FINAL_META}  /path/to/taxonium_for_bscan/data/${FAMILY}/"
+echo ""
+echo "  Then commit and push — GitHub Actions will regenerate index.html"
+echo "  and the family will appear on the GitHub Pages site automatically."
+echo ""
+echo "  Direct Taxonium URL:"
+TAXONIUM_BASE="https://taxonium.org/"
+RAW_BASE="https://raw.githubusercontent.com/lyndallp/taxonium_for_bscan/master"
+TREE_URL="${RAW_BASE}/data/${FAMILY}/${FAMILY}_final_tree.newick"
+META_URL="${RAW_BASE}/data/${FAMILY}/${FAMILY_LOWER}_metadata_FINAL.tsv"
+CFG_URL="${RAW_BASE}/config.json"
+ENCODED=$(python3 -c "
+import urllib.parse
+print('${TAXONIUM_BASE}?' + urllib.parse.urlencode({
+    'treeUrl':   '${TREE_URL}',
+    'metaUrl':   '${META_URL}',
+    'configUrl': '${CFG_URL}',
+}))" 2>/dev/null || echo "  (python3 not available to generate URL)")
+echo "    ${ENCODED}"
+echo ""
