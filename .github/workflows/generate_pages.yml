@@ -1,12 +1,12 @@
 name: Generate Taxonium Index
 
 # Runs whenever tree/metadata files are added to data/ or config changes.
-# Re-generates index.html and commits it back to master.
-# GitHub Pages must be enabled: Settings → Pages → Source: master branch / root.
+# Re-generates index.html and commits it back to main.
+# GitHub Pages must be enabled: Settings → Pages → Source: main branch / root.
 
 on:
   push:
-    branches: [master]
+    branches: [main]
     paths:
       - "data/**"
       - "config.json"
