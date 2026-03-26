@@ -447,8 +447,6 @@ def build_html(families: list) -> str:
 
     /* ── Content sections (below header) ────────────────────────── */
     .content-sections {{
-      background: #fff;
-      border-bottom: 1px solid #e2e8f0;
       padding: 2rem 2rem 0.5rem;
     }}
     .scientific-context,
@@ -615,8 +613,6 @@ def build_html(families: list) -> str:
 
     /* ── Tree container ──────────────────────────────────────────── */
     .tree-container {{
-      max-width: 860px;
-      margin: 1.5rem auto;
       padding: 0 1.5rem 3rem;
     }}
 
@@ -711,6 +707,43 @@ def build_html(families: list) -> str:
     .order-block.collapsed .family-list {{ display: none; }}
     .family-item.hidden {{ display: none; }}
     .order-block.all-hidden {{ display: none; }}
+
+    /* ── Two-panel layout ────────────────────────────────────────── */
+    .page-body {{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: start;
+      min-height: calc(100vh - 140px);
+    }}
+    .left-panel {{
+      background: #fff;
+      border-right: 2px solid #e2e8f0;
+      overflow-y: auto;
+    }}
+    .right-panel {{
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      background: #f4f6f9;
+    }}
+    .right-panel .stats {{
+      border-bottom: 1px solid #e2e8f0;
+      background: #fff;
+    }}
+    .right-panel .search-bar {{
+      background: #fff;
+      border-bottom: 1px solid #e2e8f0;
+    }}
+    @media (max-width: 900px) {{
+      .page-body {{
+        grid-template-columns: 1fr;
+      }}
+      .right-panel {{
+        position: static;
+        height: auto;
+      }}
+    }}
   </style>
 </head>
 <body>
@@ -726,6 +759,8 @@ def build_html(families: list) -> str:
   </p>
 </header>
 
+<div class="page-body">
+<div class="left-panel">
 <div class="content-sections">
 
   <div class="scientific-context">
@@ -821,7 +856,9 @@ def build_html(families: list) -> str:
   </div>
 
 </div>
+</div><!-- end left-panel -->
 
+<div class="right-panel">
 <div class="stats">
   <div class="stat">
     <span class="stat-value">{n_families}</span>
@@ -845,6 +882,8 @@ def build_html(families: list) -> str:
 {orders_html}
   <div id="no-results">No families match your search.</div>
 </div>
+</div><!-- end right-panel -->
+</div><!-- end page-body -->
 
 <script>
   function toggleOrder(btn) {{
