@@ -1,0 +1,74 @@
+{
+  "title": "UK BIOSCAN Phylogenetics",
+  "defaultColorByField": "meta_bags_grade",
+  "customNames": {
+    "meta_bags_grade": "BAGS Grade",
+    "meta_placement_quality": "Placement Quality",
+    "meta_placement_type": "Placement Type",
+    "meta_subfamily": "Subfamily",
+    "meta_geography_broad": "Geography (broad)",
+    "meta_in_uksi": "In UKSI",
+    "meta_species": "Species",
+    "meta_genus": "Genus",
+    "meta_family": "Family",
+    "meta_bin": "BOLD BIN",
+    "meta_category": "Category",
+    "meta_needs_attention": "Needs Attention",
+    "meta_UKSI_name_match": "UKSI Name Match",
+    "meta_Bioscan specimen count": "BIOSCAN Specimen Count",
+    "meta_Node support / Placement": "Node Support / Placement"
+  },
+  "keys_to_display": [
+    "name",
+    "meta_species",
+    "meta_bin",
+    "meta_bags_grade",
+    "meta_category",
+    "meta_placement_quality",
+    "meta_placement_type",
+    "meta_Node support / Placement",
+    "meta_geography_broad",
+    "meta_in_uksi",
+    "meta_family",
+    "meta_Bioscan specimen count",
+    "meta_UKSI_name_match"
+  ],
+  "colorBy": {
+    "colorByOptions": [
+      "meta_bags_grade",
+      "meta_category",
+      "meta_placement_quality",
+      "meta_Node support / Placement",
+      "meta_subfamily",
+      "meta_family",
+      "meta_geography_broad",
+      "meta_in_uksi",
+      "meta_species",
+      "meta_genus",
+      "meta_needs_attention",
+      "None"
+    ]
+  },
+  "colorMapping": {
+    "A": [34, 139, 34],
+    "B": [144, 238, 34],
+    "C": [255, 165, 0],
+    "D": [220, 80, 20],
+    "E": [180, 20, 20],
+    "True": [0, 100, 200],
+    "true": [0, 100, 200],
+    "TRUE": [0, 100, 200],
+    "False": [180, 180, 180],
+    "false": [180, 180, 180],
+    "FALSE": [180, 180, 180]
+  },
+  "search_types": [
+    { "name": "name",             "label": "Name",         "type": "text_match" },
+    { "name": "meta_species",     "label": "Species",      "type": "text_match" },
+    { "name": "meta_genus",       "label": "Genus",        "type": "text_match" },
+    { "name": "meta_bin",         "label": "BOLD BIN",     "type": "text_exact" },
+    { "name": "meta_bags_grade",  "label": "BAGS Grade",   "type": "text_exact" },
+    { "name": "meta_category",    "label": "Category",     "type": "text_exact" },
+    { "name": "meta_geography_broad", "label": "Geography","type": "text_match" }
+  ]
+}

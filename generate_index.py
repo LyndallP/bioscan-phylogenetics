@@ -36,8 +36,8 @@ from datetime import datetime, timezone
 # ---------------------------------------------------------------------------
 # Configuration — edit these if the repo name or branch ever changes
 # ---------------------------------------------------------------------------
-GITHUB_USER   = "lyndallp"
-GITHUB_REPO   = "taxonium_for_bscan"
+GITHUB_USER   = "LyndallP"
+GITHUB_REPO   = "bioscan-phylogenetics"
 GITHUB_BRANCH = "master"
 CONFIG_FILE   = "config.json"
 DATA_DIR      = Path("data")
