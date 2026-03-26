@@ -38,7 +38,7 @@ from datetime import datetime, timezone
 # ---------------------------------------------------------------------------
 GITHUB_USER   = "LyndallP"
 GITHUB_REPO   = "bioscan-phylogenetics"
-GITHUB_BRANCH = "master"
+GITHUB_BRANCH = "main"
 CONFIG_FILE   = "config.json"
 DATA_DIR      = Path("data")
 OUTPUT_FILE   = Path("index.html")
