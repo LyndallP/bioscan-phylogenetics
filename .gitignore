@@ -22,6 +22,10 @@
 !*_example.tsv
 !template/*.csv
 
+# Allow data/ outputs for GitHub Pages / Taxonium
+!data/**/*.tsv
+!data/**/*.newick
+
 # RAxML outputs
 *.raxml.*
 RAxML_*
