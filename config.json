@@ -1,6 +1,6 @@
 {
   "title": "UK BIOSCAN Phylogenetics",
-  "defaultColorByField": "meta_bags_grade",
+  "defaultColorByField": "meta_dataset",
   "customNames": {
     "meta_bags_grade": "BAGS Grade",
     "meta_placement_quality": "Placement Quality",
