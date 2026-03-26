@@ -152,6 +152,13 @@ if dropped:
 else:
     print("  (no columns to remove)")
 
+# n_bins_for_species: pandas reads mixed numeric/empty columns as float (3.0).
+# Convert to integer string so it displays as 3, not 3.0.
+if 'n_bins_for_species' in df.columns:
+    df['n_bins_for_species'] = df['n_bins_for_species'].apply(
+        lambda x: '' if (pd.isna(x) or str(x).strip() in ('', 'nan')) else str(int(float(x)))
+    )
+
 print(f"\n  Final column count: {len(df.columns)}")
 
 # ============================================================================
