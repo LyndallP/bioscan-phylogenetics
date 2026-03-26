@@ -270,33 +270,151 @@ def build_html(families: list) -> str:
       color: #fff;
       padding: 2.5rem 2rem 2rem;
     }}
+    .header-top {{
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 1rem;
+    }}
+    .bioscan-logo {{
+      height: 60px;
+      width: auto;
+    }}
     header h1 {{
       font-size: 1.9rem;
       font-weight: 700;
       letter-spacing: -0.02em;
-      margin-bottom: 0.5rem;
     }}
     header .subtitle {{
       font-size: 1rem;
       opacity: 0.85;
-      max-width: 680px;
-      line-height: 1.55;
+      max-width: 780px;
+      line-height: 1.6;
+      margin-bottom: 0;
     }}
 
-    /* ── Guide box ───────────────────────────────────────────────── */
-    .guide {{
-      background: rgba(255,255,255,0.12);
-      border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 8px;
+    /* ── Content sections (below header) ────────────────────────── */
+    .content-sections {{
+      background: #fff;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 2rem 2rem 0.5rem;
+    }}
+    .scientific-context,
+    .how-to-guide,
+    .metadata-guide {{
+      background: #f8f9fa;
+      border-left: 4px solid #2a6049;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border-radius: 0 6px 6px 0;
+    }}
+    .scientific-context h2,
+    .how-to-guide h2,
+    .metadata-guide h2 {{
+      margin-top: 0;
+      margin-bottom: 0.75rem;
+      color: #1a365d;
+      font-size: 1.15rem;
+    }}
+    .scientific-context h3 {{
+      margin-top: 1.25rem;
+      margin-bottom: 0.5rem;
+      color: #2a6049;
+      font-size: 1rem;
+    }}
+    .scientific-context p,
+    .how-to-guide p,
+    .metadata-guide p {{
+      line-height: 1.65;
+      margin-bottom: 0.75rem;
+      font-size: 0.95rem;
+    }}
+    .scientific-context p:last-child,
+    .metadata-guide p:last-child {{ margin-bottom: 0; }}
+    .scientific-context a,
+    .how-to-guide a,
+    .metadata-guide a {{
+      color: #2a6049;
+      text-decoration: underline;
+    }}
+    .how-to-guide ol {{
+      padding-left: 1.4rem;
+      margin-top: 0.5rem;
+    }}
+    .how-to-guide li {{
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }}
+
+    /* ── Metadata table ──────────────────────────────────────────── */
+    .metadata-table {{
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.88rem;
+    }}
+    .metadata-table th,
+    .metadata-table td {{
+      padding: 10px 12px;
+      text-align: left;
+      border: 1px solid #dee2e6;
+      vertical-align: top;
+    }}
+    .metadata-table th {{
+      background-color: #1a365d;
+      color: #fff;
+      font-weight: 600;
+    }}
+    .metadata-table tr:nth-child(even) td {{
+      background-color: #f8f9fa;
+    }}
+    .metadata-table code {{
+      background: #e9ecef;
+      padding: 2px 5px;
+      border-radius: 3px;
+      font-family: "SFMono-Regular", "Consolas", monospace;
+      font-size: 0.85em;
+      color: #c7254e;
+    }}
+    .section-header td {{
+      background: #e9ecef !important;
+      font-style: italic;
+      text-align: center;
+      color: #555;
+    }}
+
+    /* ── Search tips box ─────────────────────────────────────────── */
+    .search-tips {{
+      background: #fff3cd;
+      border-left: 4px solid #ffc107;
       padding: 1rem 1.25rem;
       margin-top: 1.25rem;
-      font-size: 0.88rem;
-      line-height: 1.6;
-      max-width: 680px;
+      border-radius: 0 6px 6px 0;
     }}
-    .guide strong {{ opacity: 1; }}
-    .guide ol {{ padding-left: 1.2rem; margin-top: 0.4rem; }}
-    .guide li {{ margin-bottom: 0.25rem; }}
+    .search-tips h3 {{
+      margin-top: 0;
+      margin-bottom: 0.5rem;
+      color: #856404;
+      font-size: 0.95rem;
+    }}
+    .search-tips ul {{
+      padding-left: 1.2rem;
+      margin-bottom: 0;
+    }}
+    .search-tips li {{
+      margin-bottom: 0.3rem;
+      font-size: 0.88rem;
+      line-height: 1.55;
+    }}
+    .search-tips code {{
+      background: #fff;
+      padding: 1px 5px;
+      border-radius: 3px;
+      border: 1px solid #ffc107;
+      font-family: "SFMono-Regular", "Consolas", monospace;
+      font-size: 0.85em;
+    }}
 
     /* ── Stats bar ───────────────────────────────────────────────── */
     .stats {{
@@ -446,24 +564,111 @@ def build_html(families: list) -> str:
 <body>
 
 <header>
-  <h1>🔬 UK BIOSCAN Phylogenetics</h1>
+  <div class="header-top">
+    <img src="bioscan_logo.png" alt="BIOSCAN logo" class="bioscan-logo">
+    <h1>🔬 UK BIOSCAN Phylogenetics</h1>
+  </div>
   <p class="subtitle">
-    Phylogenetic trees for UK BIOSCAN insect specimens placed onto BGE
-    reference trees. Each family links to an interactive Taxonium viewer
-    showing specimen placements, BAGS quality grades, and metadata.
+    Phylogenetic placement of UK BIOSCAN insect specimens onto BGE reference trees,
+    revealing biodiversity coverage and highlighting species gaps in the UK barcode library.
   </p>
-  <div class="guide">
-    <strong>How to use:</strong>
+</header>
+
+<div class="content-sections">
+
+  <div class="scientific-context">
+    <h2>About This Resource</h2>
+    <p>
+      The <a href="https://bioscan.tol.sanger.ac.uk/" target="_blank">BIOSCAN UK project</a>
+      is systematically collecting and DNA barcoding arthropods across the UK, generating
+      comprehensive COI-5P barcode coverage for British insect diversity. This visualization
+      platform places BIOSCAN specimens onto high-quality reference phylogenies from the
+      <strong>Bioscan Genomics Europe (BGE)</strong> project, creating interactive trees that
+      span <strong>450+ arthropod families across 40 orders</strong>.
+    </p>
+    <p>
+      Each tree integrates multiple data sources: BIOSCAN UK specimens, European reference
+      barcodes, <strong>Darwin Tree of Life (DToL) genome assemblies</strong>, and UK Species
+      Inventory (UKSI) taxonomy. The modular design allows new datasets—such as genome-sequenced
+      specimens or regional barcode initiatives—to be seamlessly added to existing trees.
+    </p>
+    <h3>Why This Matters</h3>
+    <p>
+      These trees reveal the <strong>UKSI gap analysis</strong> in action: which British species
+      lack COI barcodes, where taxonomic uncertainties exist, and which lineages would benefit
+      from genome sequencing. By visualizing <strong>BAGS quality grades</strong>
+      (<a href="https://doi.org/10.1111/1755-0998.13262" target="_blank">Pentinsaari et al. 2020</a>),
+      BIN assignments, and phylogenetic placement confidence together, the trees support
+      biodiversity surveillance, taxonomic validation, and genome prioritization decisions.
+    </p>
+    <p>
+      The UKSI gap analysis underlying these visualizations is part of the broader
+      <a href="https://ukbol.org/" target="_blank">UKBOL (UK Barcode of Life)</a> initiative.
+      See the <a href="https://ukbol.org/species/bold_coi.html?kingdom=Animalia" target="_blank">UKBOL species coverage overview</a>
+      for context on which British species have COI barcodes.
+    </p>
+  </div>
+
+  <div class="how-to-guide">
+    <h2>How to Use These Trees</h2>
     <ol>
-      <li>Click a family name to open its tree in Taxonium (opens in a new tab).</li>
-      <li>In Taxonium, use <em>Color by</em> to explore BAGS grades, placement quality,
-          geography, and more.</li>
-      <li>Click any tip node to see specimen metadata, BOLD links, and NCBI BLAST.</li>
-      <li>Copy the browser URL after loading — it encodes the full view and is
-          shareable without needing access to any files.</li>
+      <li><strong>Click a family name</strong> in the table below to open its interactive tree in Taxonium (opens in new tab).</li>
+      <li><strong>Explore the data:</strong> In Taxonium, use the <em>Color by</em> dropdown to visualize different metadata dimensions—BAGS grades, BIN quality issues, placement confidence, geography, UKSI status, and more.</li>
+      <li><strong>Click any tip node</strong> to see full specimen metadata, including direct links to BOLD records, NCBI BLAST searches, GBIF distribution maps, NBN Atlas records, and DToL genome assemblies (where available).</li>
+      <li><strong>Use the Search button</strong> (top-right in Taxonium) to find specific specimens, species, BINs, or metadata values. See the searchable terms table below.</li>
+      <li><strong>Share your view:</strong> After exploring, copy the browser URL—it encodes the current zoom, coloring, and search state, creating a shareable link that works without file access.</li>
     </ol>
   </div>
-</header>
+
+  <div class="metadata-guide">
+    <h2>Searchable Metadata Fields</h2>
+    <p>Use the <strong>Search</strong> button in Taxonium to filter specimens by any of these metadata fields.</p>
+    <table class="metadata-table">
+      <thead>
+        <tr><th>Field Name</th><th>Description</th><th>Searchable Values</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>species</code></td><td>Species name (or genus + "sp." for unidentified)</td><td>Scientific names (e.g., "Empis tessellata", "Unknown species")</td></tr>
+        <tr><td><code>bin</code></td><td>BOLD Barcode Index Number</td><td>BIN URIs (e.g., "BOLD:ACD3004")</td></tr>
+        <tr><td><code>processid</code></td><td>BOLD process ID (unique specimen identifier)</td><td>Process IDs (e.g., "YARN1707-23")</td></tr>
+        <tr><td><code>Specimen ID</code></td><td>BIOSCAN specimen tube ID</td><td>Tube IDs (e.g., "SHAP_062_D11")</td></tr>
+        <tr><td><code>category</code></td><td>Specimen source category</td><td><strong>BIOSCAN_collected</strong> = BIOSCAN UK specimen &nbsp;|&nbsp; <strong>UKSI_no_specimens</strong> = UKSI-listed species, no BIOSCAN specimens yet &nbsp;|&nbsp; <strong>Europe_reference</strong> = European reference barcode &nbsp;|&nbsp; <strong>Not_in_UKSI</strong> = Not in UK Species Inventory</td></tr>
+        <tr><td><code>dataset</code></td><td>Data source</td><td><strong>BIOSCAN</strong> | <strong>Reference</strong> | <strong>DTOL</strong></td></tr>
+        <tr><td><code>geography</code></td><td>Country of collection</td><td>Country names (e.g., "United Kingdom", "Finland")</td></tr>
+        <tr><td><code>geography_broad</code></td><td>Broader geographic region</td><td>"British Isles", "Scandinavia", "Western Europe", etc.</td></tr>
+        <tr><td><code>in_uksi</code></td><td>Is species listed in UK Species Inventory?</td><td><strong>True</strong> | <strong>False</strong></td></tr>
+        <tr><td><code>UKSI_name_match</code></td><td>Matched name in UKSI (if applicable)</td><td>Species names or blank</td></tr>
+        <tr><td><code>Bioscan specimen count</code></td><td>Number of BIOSCAN specimens for this BIN across all families</td><td>Numbers (e.g., "0", "87", "12")</td></tr>
+        <tr><td><code>placement_type</code></td><td>How specimen was placed on the tree</td><td><strong>reference_tree</strong> = Part of original reference tree &nbsp;|&nbsp; <strong>validation</strong> = BIOSCAN specimen placed via EPA-ng &nbsp;|&nbsp; <strong>novel</strong> = Novel placement (species not in reference tree)</td></tr>
+        <tr><td><code>placement_quality</code></td><td>Phylogenetic placement confidence</td><td><strong>High</strong> = EPA-ng LWR &ge; 0.90 &nbsp;|&nbsp; <strong>Moderate to Low</strong> = LWR &lt; 0.75</td></tr>
+        <tr><td><code>epa_lwr_score</code></td><td>EPA-ng likelihood weight ratio (0–1)</td><td>Numerical scores (e.g., "1.0", "0.3367799324")</td></tr>
+        <tr><td><code>parent_bootstrap</code></td><td>Bootstrap support for parent node</td><td>Values 0–1 (e.g., "0.92", "1.0")</td></tr>
+        <tr><td><code>Node support / Placement</code></td><td>Human-readable placement quality summary</td><td>"High (0.90–1.00)" | "Moderate to Low (0–0.74)" | "No support data" | "Novel placement"</td></tr>
+        <tr><td><code>bags_grade</code></td><td>Barcode audit grade (<a href="https://doi.org/10.1111/1755-0998.13262" target="_blank">Pentinsaari et al. 2020</a>)</td><td><strong>A</strong> = Ideal &nbsp;|&nbsp; <strong>B</strong> = Acceptable &nbsp;|&nbsp; <strong>C</strong> = Species split across BINs &nbsp;|&nbsp; <strong>D</strong> = Problematic &nbsp;|&nbsp; <strong>E</strong> = BIN shared by multiple species</td></tr>
+        <tr><td><code>bin_quality_issue</code></td><td>BIN assignment flag</td><td><strong>clean</strong> | <strong>shares_BIN_with_other_species</strong> | <strong>split_across_2_BINs</strong> | <strong>split_across_3_BINs</strong> | <strong>split_across_4_BINs</strong></td></tr>
+        <tr><td><code>n_bins_for_species</code></td><td>How many BINs this species spans</td><td>Numbers (e.g., "1", "2", "3")</td></tr>
+        <tr><td><code>needs_attention</code></td><td>Flagged for review (Grade C/D/E)</td><td><strong>True</strong> | <strong>False</strong></td></tr>
+        <tr><td><code>tolid</code></td><td>Tree of Life ID (DToL genome specimen)</td><td>ToL IDs (e.g., "idCorForc3") or blank</td></tr>
+        <tr><td><code>assembly_status</code></td><td>DToL genome assembly stage</td><td>"Scaffolding" | "Curating" | "Done" | "Pre-curation" | "In assembly" | blank</td></tr>
+        <tr><td><code>genome_status</code></td><td>Overall genome availability</td><td>"Public" | "Sample Collected" | blank</td></tr>
+        <tr><td><code>species_in_GOAT</code></td><td>Species present in GOAT genome portal?</td><td><strong>True</strong> | <strong>False</strong></td></tr>
+        <tr class="section-header"><td colspan="3"><em>Database links (GBIF, GOAT, NBN, TOLQC, BLAST, BOLD) are clickable in the metadata panel but not searchable terms</em></td></tr>
+      </tbody>
+    </table>
+    <div class="search-tips">
+      <h3>Search Tips</h3>
+      <ul>
+        <li><strong>Exact match:</strong> Search <code>bags_grade: A</code> for all Grade A specimens</li>
+        <li><strong>Partial match:</strong> Search <code>Empis</code> to find all Empis species</li>
+        <li><strong>BIN search:</strong> Search <code>BOLD:ACD3004</code> to see all specimens in that BIN</li>
+        <li><strong>Geographic filter:</strong> Search <code>United Kingdom</code> or <code>British Isles</code></li>
+        <li><strong>Quality flags:</strong> Search <code>shares_BIN_with_other_species</code> to find potential misidentifications</li>
+        <li><strong>UKSI gaps:</strong> Search <code>UKSI_no_specimens</code> to find UKSI-listed species still lacking BIOSCAN coverage</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
 
 <div class="stats">
   <div class="stat">
