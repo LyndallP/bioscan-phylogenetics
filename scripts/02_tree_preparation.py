@@ -26,6 +26,10 @@ tree.prune([tip for tip in all_tips if not tip.startswith("OUTGROUP")])
 
 print(f"\nPruned tree: {len(tree)} tips")
 
+# Resolve polytomies (required by EPA-ng)
+tree.resolve_polytomy(recursive=True)
+print("Polytomies resolved (tree is now fully bifurcating)")
+
 # Save pruned tree
 tree.write(format=1, outfile=output_tree)
 print(f"\nSaved to: {output_tree}")
