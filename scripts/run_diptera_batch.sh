@@ -130,15 +130,8 @@ fi
 # Protect API key in run_family_pipeline.sh
 git update-index --skip-worktree scripts/run_family_pipeline.sh 2>/dev/null || true
 
-# Pull latest feature branch (stashing pipeline script first)
-log "Pulling latest from $FEATURE_BRANCH..."
-git update-index --no-skip-worktree scripts/run_family_pipeline.sh
-git stash push -m "batch-api-key-stash" -- scripts/run_family_pipeline.sh 2>/dev/null || true
-git pull origin "$FEATURE_BRANCH" || { echo "ERROR: git pull failed"; exit 1; }
-git stash pop 2>/dev/null || true
-git update-index --skip-worktree scripts/run_family_pipeline.sh
-
-# Pull latest main
+# Fetch latest main (no feature branch pull — avoids rebase conflicts on index.html)
+log "Fetching latest from $MAIN_BRANCH..."
 log "Pulling latest from $MAIN_BRANCH..."
 git fetch origin "$MAIN_BRANCH"
 
@@ -210,8 +203,22 @@ for FAMILY in "${FAMILIES[@]}"; do
     git update-index --no-skip-worktree scripts/run_family_pipeline.sh
     git stash push -m "batch-api-key-stash" -- scripts/run_family_pipeline.sh 2>/dev/null || true
 
-    git checkout "$MAIN_BRANCH"
-    git pull --rebase origin "$MAIN_BRANCH"
+    if ! git checkout "$MAIN_BRANCH" 2>/dev/null; then
+        log "WARNING: could not checkout $MAIN_BRANCH for $FAMILY — restoring state"
+        git stash pop 2>/dev/null || true
+        git update-index --skip-worktree scripts/run_family_pipeline.sh
+        skip "$FAMILY — failed to switch to $MAIN_BRANCH (data files safe in $DATA_DIR)"
+        continue
+    fi
+
+    # Pull with rebase, auto-resolving index.html conflicts
+    if ! git pull --rebase origin "$MAIN_BRANCH" 2>/dev/null; then
+        while git status 2>/dev/null | grep -qE "rebase in progress|REBASE_HEAD"; do
+            git checkout --ours index.html 2>/dev/null || true
+            git add index.html 2>/dev/null || true
+            git rebase --continue 2>/dev/null || git rebase --skip 2>/dev/null || break
+        done
+    fi
 
     git add "$DATA_DIR/"
     if git diff --cached --quiet; then
