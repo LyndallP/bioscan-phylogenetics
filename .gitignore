@@ -47,5 +47,8 @@ venv/
 # Input data (too large)
 families/*/data/input/
 
+# All families/ working directories (local analysis files, never push to GitHub)
+families/
+
 # Allow .gitkeep files
 !**/.gitkeep
