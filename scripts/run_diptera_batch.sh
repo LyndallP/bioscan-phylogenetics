@@ -174,9 +174,10 @@ for FAMILY in "${FAMILIES[@]}"; do
         continue
     fi
 
-    # Skip if already uploaded to data/
-    if [[ -f "${DATA_DIR}/${FAMILY_LOWER}_metadata_FINAL.tsv" ]]; then
-        log "$FAMILY already in data/ — skipping pipeline, re-checking push..."
+    # Skip if already uploaded to data/ on remote main
+    git fetch origin "$MAIN_BRANCH" --quiet 2>/dev/null || true
+    if git cat-file -e "origin/${MAIN_BRANCH}:${DATA_DIR}/${FAMILY_LOWER}_metadata_FINAL.tsv" 2>/dev/null; then
+        log "$FAMILY already in data/ on origin/main — skipping pipeline, re-checking push..."
     else
         # Run pipeline
         log "Running pipeline for $FAMILY..."
