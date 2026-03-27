@@ -459,12 +459,12 @@
 <div class="right-panel">
 <div class="stats">
   <div class="stat">
-    <span class="stat-value">81</span>
+    <span class="stat-value">82</span>
     <span class="stat-label">families</span>
   </div>
   <div class="stat">
-    <span class="stat-value">1</span>
-    <span class="stat-label">order</span>
+    <span class="stat-value">2</span>
+    <span class="stat-label">orders</span>
   </div>
   <span class="updated">Updated 27 March 2026</span>
 </div>
@@ -477,6 +477,18 @@
 </div>
 
 <div class="tree-container">
+
+        <div class="order-block" data-order="amphipoda">
+          <button class="order-header" onclick="toggleOrder(this)" aria-expanded="true">
+            <span class="order-toggle">▾</span>
+            <span class="order-icon">🦐</span>
+            <span class="order-name">Amphipoda</span>
+            <span class="order-count">1 family</span>
+          </button>
+          <ul class="family-list">
+            <li class="family-item" data-family="talitridae"><span class="tree-connector">└─</span><a href="https://taxonium.org/?treeUrl=https%3A%2F%2Fraw.githubusercontent.com%2FLyndallP%2Fbioscan-phylogenetics%2Fmain%2Fdata%2FTalitridae%2FTalitridae_final_tree.newick&metaUrl=https%3A%2F%2Fraw.githubusercontent.com%2FLyndallP%2Fbioscan-phylogenetics%2Fmain%2Fdata%2FTalitridae%2Ftalitridae_metadata_FINAL.tsv&configUrl=https%3A%2F%2Fraw.githubusercontent.com%2FLyndallP%2Fbioscan-phylogenetics%2Fmain%2Fconfig.json" target="_blank" rel="noopener"    class="family-link" title="Open Talitridae tree in Taxonium">Talitridae</a><span class="link-arrow">↗</span></li>
+          </ul>
+        </div>
 
         <div class="order-block" data-order="diptera">
           <button class="order-header" onclick="toggleOrder(this)" aria-expanded="true">
