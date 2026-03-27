@@ -130,15 +130,8 @@ fi
 # Protect API key in run_family_pipeline.sh
 git update-index --skip-worktree scripts/run_family_pipeline.sh 2>/dev/null || true
 
-# Pull latest feature branch (stashing pipeline script first)
-log "Pulling latest from $FEATURE_BRANCH..."
-git update-index --no-skip-worktree scripts/run_family_pipeline.sh
-git stash push -m "batch-api-key-stash" -- scripts/run_family_pipeline.sh 2>/dev/null || true
-git pull origin "$FEATURE_BRANCH" || { echo "ERROR: git pull failed"; exit 1; }
-git stash pop 2>/dev/null || true
-git update-index --skip-worktree scripts/run_family_pipeline.sh
-
-# Pull latest main
+# Fetch latest main (no feature branch pull — avoids rebase conflicts on index.html)
+log "Fetching latest from $MAIN_BRANCH..."
 log "Pulling latest from $MAIN_BRANCH..."
 git fetch origin "$MAIN_BRANCH"
 
