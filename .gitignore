@@ -25,6 +25,7 @@
 # Allow data/ outputs for GitHub Pages / Taxonium
 !data/**/*.tsv
 !data/**/*.newick
+!data/**/*.tre
 
 # RAxML outputs
 *.raxml.*
