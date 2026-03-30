@@ -49,101 +49,253 @@ OUTPUT_FILE   = Path("index.html")
 # ---------------------------------------------------------------------------
 ORDER_FAMILIES = {
     "Diptera": [
-        "Agromyzidae","Anisopodidae","Anthomyiidae","Asilidae","Bibionidae",
-        "Bombyliidae","Calliphoridae","Cecidomyiidae","Chironomidae",
-        "Chloropidae","Conopidae","Culicidae","Dolichopodidae","Drosophilidae",
-        "Empididae","Ephydridae","Fanniidae","Heleomyzidae","Hybotidae",
-        "Lauxaniidae","Limoniidae","Lonchaeidae","Muscidae","Mycetophilidae",
-        "Opomyzidae","Phoridae","Pipunculidae","Platypezidae","Psychodidae",
-        "Ptychopteridae","Rhagionidae","Sarcophagidae","Scathophagidae",
-        "Sciaridae","Sciomyzidae","Simuliidae","Sphaeroceridae","Stratiomyidae",
-        "Syrphidae","Tabanidae","Tachinidae","Tephritidae","Therevidae",
-        "Tipulidae","Ulidiidae","Xylomyidae","Xylophagidae",
+        "Acartophthalmidae","Agromyzidae","Anisopodidae","Anthomyiidae",
+        "Anthomyzidae","Asilidae","Asteiidae","Atelestidae","Bibionidae",
+        "Bolitophilidae","Bombyliidae","Brachystomatidae","Calliphoridae",
+        "Camillidae","Carnidae","Cecidomyiidae","Ceratopogonidae",
+        "Chamaemyiidae","Chaoboridae","Chironomidae","Chloropidae","Chyromyidae",
+        "Clusiidae","Conopidae","Cryptochetidae","Culicidae","Cylindrotomidae",
+        "Diadocidiidae","Diastatidae","Ditomyiidae","Dixidae","Dolichopodidae",
+        "Drosophilidae","Dryomyzidae","Empididae","Ephydridae","Fanniidae",
+        "Heleomyzidae","Hippoboscidae","Hybotidae","Keroplatidae","Lauxaniidae",
+        "Limoniidae","Lonchaeidae","Lonchopteridae","Micropezidae","Milichiidae",
+        "Muscidae","Mycetophilidae","Odiniidae","Oestridae","Opetiidae",
+        "Opomyzidae","Pallopteridae","Pediciidae","Periscelididae","Phoridae",
+        "Piophilidae","Pipunculidae","Platypezidae","Platystomatidae",
+        "Polleniidae","Psilidae","Psychodidae","Ptychopteridae","Rhagionidae",
+        "Sarcophagidae","Scathophagidae","Scatopsidae","Scenopinidae","Sciaridae",
+        "Sciomyzidae","Sepsidae","Simuliidae","Sphaeroceridae","Stratiomyidae",
+        "Syrphidae","Tabanidae","Tachinidae","Tephritidae","Thaumaleidae",
+        "Therevidae","Tipulidae","Trichoceridae","Ulidiidae","Xylomyidae",
+        "Xylophagidae",
     ],
     "Hymenoptera": [
-        "Andrenidae","Apidae","Argidae","Braconidae","Chalcididae","Cimbicidae",
-        "Colletidae","Cynipidae","Diapriidae","Encyrtidae","Eulophidae",
-        "Eupelmidae","Eurytomidae","Figitidae","Formicidae","Halictidae",
-        "Ichneumonidae","Megachilidae","Mutillidae","Mymaridae","Pamphiliidae",
-        "Platygastridae","Pompilidae","Pteromalidae","Scelionidae","Siricidae",
-        "Sphecidae","Tenthredinidae","Tiphiidae","Torymidae",
-        "Trichogrammatidae","Vespidae","Xiphydriidae",
+        "Andrenidae","Aphelinidae","Apidae","Argidae","Bembicidae","Bethylidae",
+        "Braconidae","Ceidae","Ceraphronidae","Cephidae",
+        "Chalcidoidea_incertae_sedis","Chrysididae","Cleonymidae","Colletidae",
+        "Crabronidae","Cynipidae","Diapriidae","Diplolepididae","Diprionidae",
+        "Dryinidae","Embolemidae","Encyrtidae","Eunotidae","Eupelmidae",
+        "Eurytomidae","Figitidae","Formicidae","Gasteruptiidae","Halictidae",
+        "Heloridae","Heptamelidae","Ichneumonidae","Ismaridae","Megachilidae",
+        "Megaspilidae","Megastigmidae","Mellinidae","Mymaridae","Myrmosidae",
+        "Ormyridae","Pemphredonidae","Perilampidae","Philanthidae","Pirenidae",
+        "Platygastridae","Pompilidae","Proctotrupidae","Psenidae","Pteromalidae",
+        "Scelionidae","Signiphoridae","Spalangiidae","Systasidae","Tenthredinidae",
+        "Tetracampidae","Tiphiidae","Torymidae","Trichogrammatidae","Vespidae",
+        "Xyelidae",
     ],
     "Coleoptera": [
-        "Aderidae","Anobiidae","Anthicidae","Apionidae","Buprestidae",
-        "Cantharidae","Carabidae","Cerambycidae","Chrysomelidae","Ciidae",
-        "Cleridae","Coccinellidae","Cryptophagidae","Curculionidae",
-        "Dermestidae","Dytiscidae","Elateridae","Elmidae","Endomychidae",
-        "Erotylidae","Geotrupidae","Gyrinidae","Haliplidae","Histeridae",
-        "Hydrophilidae","Lampyridae","Lathridiidae","Leiodidae","Lucanidae",
-        "Meloidae","Mordellidae","Nitidulidae","Oedemeridae","Phalacridae",
-        "Ptiliidae","Pyrochroidae","Rhynchitidae","Scarabaeidae","Scirtidae",
-        "Silphidae","Salpingidae","Staphylinidae","Tenebrionidae","Throscidae",
+        "Anthicidae","Anthribidae","Attelabidae","Biphyllidae","Brentidae",
+        "Buprestidae","Byturidae","Cantharidae","Carabidae","Cerambycidae",
+        "Chrysomelidae","Ciidae","Clambidae","Cleridae","Coccinellidae",
+        "Corylophidae","Cryptophagidae","Curculionidae","Dascillidae",
+        "Dermestidae","Dryopidae","Dytiscidae","Elateridae","Endomychidae",
+        "Erotylidae","Eucnemidae","Gyrinidae","Helophoridae","Heteroceridae",
+        "Hydraenidae","Hydrochidae","Hydrophilidae","Kateretidae","Lampyridae",
+        "Latridiidae","Leiodidae","Lymexylidae","Melandryidae","Melyridae",
+        "Monotomidae","Mordellidae","Mycetophagidae","Nitidulidae","Noteridae",
+        "Oedemeridae","Phalacridae","Phloiophilidae","Ptiliidae","Ptinidae",
+        "Pyrochroidae","Salpingidae","Scarabaeidae","Scirtidae","Scraptiidae",
+        "Silvanidae","Sphindidae","Staphylinidae","Tenebrionidae","Throscidae",
+        "Zopheridae",
     ],
     "Lepidoptera": [
-        "Argyresthiidae","Blastobasidae","Coleophoridae","Cosmopterigidae",
-        "Crambidae","Depressariidae","Elachistidae","Gelechiidae","Geometridae",
-        "Gracillariidae","Lasiocampidae","Lycaenidae","Momphidae","Nepticulidae",
-        "Noctuidae","Nymphalidae","Oecophoridae","Papilionidae","Pieridae",
-        "Plutellidae","Pterophoridae","Pyralidae","Saturniidae","Sphingidae",
-        "Tineidae","Tischeriidae","Tortricidae","Ypsolophidae","Zygaenidae",
+        "Adelidae","Alucitidae","Argyresthiidae","Autostichidae","Batrachedridae",
+        "Bedelliidae","Blastobasidae","Bucculatricidae","Choreutidae",
+        "Coleophoridae","Cossidae","Crambidae","Depressariidae","Drepanidae",
+        "Elachistidae","Epermeniidae","Erebidae","Eriocraniidae","Gelechiidae",
+        "Geometridae","Glyphipterigidae","Gracillariidae","Heliozelidae",
+        "Hepialidae","Hesperiidae","Incurvariidae","Lycaenidae","Lyonetiidae",
+        "Lypusidae","Micropterigidae","Momphidae","Nepticulidae","Noctuidae",
+        "Nolidae","Notodontidae","Nymphalidae","Oecophoridae","Opostegidae",
+        "Pieridae","Plutellidae","Praydidae","Prodoxidae","Psychidae",
+        "Pterophoridae","Pyralidae","Roeslerstammiidae","Schreckensteiniidae",
+        "Scythropiidae","Sesiidae","Tineidae","Tischeriidae","Tortricidae",
+        "Yponomeutidae","Ypsolophidae","Zygaenidae",
     ],
     "Hemiptera": [
-        "Anthocoridae","Aphididae","Aradidae","Berytidae","Cercopidae",
-        "Cicadellidae","Cimicidae","Coccidae","Corixidae","Delphacidae",
-        "Diaspididae","Gerridae","Hydrometridae","Lygaeidae","Miridae",
-        "Nabidae","Naucoridae","Nepidae","Notonectidae","Pentatomidae",
-        "Psyllidae","Pyrrhocoridae","Reduviidae","Rhopalidae","Saldidae",
-        "Scutelleridae","Tingidae","Veliidae",
-    ],
-    "Neuroptera": [
-        "Berothidae","Chrysopidae","Coniopterygidae","Dilaridae","Hemerobiidae",
-        "Mantispidae","Myrmeleontidae","Osmylidae","Raphidiidae","Sisyridae",
-    ],
-    "Trichoptera": [
-        "Beraeidae","Brachycentridae","Glossosomatidae","Goeridae",
-        "Hydropsychidae","Hydroptilidae","Lepidostomatidae","Leptoceridae",
-        "Limnephilidae","Molannidae","Philopotamidae","Phryganeidae",
-        "Polycentropodidae","Psychomyiidae","Rhyacophilidae","Sericostomatidae",
-    ],
-    "Ephemeroptera": [
-        "Baetidae","Caenidae","Ephemeridae","Ephemerellidae","Heptageniidae",
-        "Leptophlebiidae","Polymitarcyidae","Potamanthidae","Siphlonuridae",
-    ],
-    "Plecoptera": [
-        "Capniidae","Chloroperlidae","Leuctridae","Nemouridae","Perlidae",
-        "Perlodidae","Taeniopterygidae",
-    ],
-    "Odonata": [
-        "Aeshnidae","Calopterygidae","Coenagrionidae","Cordulegastridae",
-        "Corduliidae","Gomphidae","Lestidae","Libellulidae","Platycnemididae",
-    ],
-    "Orthoptera": [
-        "Acrididae","Gryllidae","Gryllotalpidae","Phaneropteridae",
-        "Raphidophoridae","Tetrigidae","Tettigoniidae",
+        "Acanthosomatidae","Adelgidae","Aleyrodidae","Anthocoridae","Aphalaridae",
+        "Aphididae","Aphrophoridae","Artheneidae","Berytidae","Blissidae",
+        "Cercopidae","Cicadellidae","Cixiidae","Coccoidea_incertae_sedis",
+        "Coreidae","Corixidae","Cydnidae","Cymidae","Delphacidae","Diaspididae",
+        "Heterogastridae","Issidae","Liviidae","Lygaeidae","Membracidae",
+        "Microphysidae","Micronectidae","Miridae","Nabidae","Oxycarenidae",
+        "Pentatomidae","Phylloxeridae","Piesmatidae","Pleidae","Pseudococcidae",
+        "Psyllidae","Reduviidae","Rhyparochromidae","Rhopalidae","Saldidae",
+        "Scutelleridae","Tingidae","Triozidae",
     ],
     "Araneae": [
-        "Agelenidae","Araneidae","Clubionidae","Dictynidae","Dysderidae",
-        "Gnaphosidae","Linyphiidae","Lycosidae","Mimetidae","Miturgidae",
-        "Philodromidae","Pisauridae","Salticidae","Segestriidae",
-        "Tetragnathidae","Theridiidae","Thomisidae","Uloboridae",
+        "Agelenidae","Amaurobiidae","Anyphaenidae","Araneidae","Cheiracanthiidae",
+        "Clubionidae","Dictynidae","Gnaphosidae","Hahniidae","Lathyidae",
+        "Linyphiidae","Lycosidae","Mimetidae","Oonopidae","Philodromidae",
+        "Pisauridae","Salticidae","Tetragnathidae","Theridiidae","Thomisidae",
+    ],
+    "Trichoptera": [
+        "Apataniidae","Beraeidae","Brachycentridae","Ecnomidae","Glossosomatidae",
+        "Goeridae","Hydropsychidae","Hydroptilidae","Lepidostomatidae",
+        "Leptoceridae","Limnephilidae","Molannidae","Philopotamidae",
+        "Phryganeidae","Polycentropodidae","Psychomyiidae","Rhyacophilidae",
+        "Sericostomatidae",
+    ],
+    "Neuroptera": [
+        "Chrysopidae","Coniopterygidae","Hemerobiidae","Sisyridae",
+    ],
+    "Ephemeroptera": [
+        "Baetidae","Caenidae","Ephemerellidae","Heptageniidae","Leptophlebiidae",
+    ],
+    "Plecoptera": [
+        "Chloroperlidae","Leuctridae","Nemouridae","Perlodidae","Taeniopterygidae",
+    ],
+    "Odonata": [
+        "Aeshnidae","Coenagrionidae",
+    ],
+    "Orthoptera": [
+        "Acrididae","Tettigoniidae",
+    ],
+    "Sarcoptiformes": [
+        "Achipteriidae","Acaridae","Carabodidae","Cepheusidae","Ceratozetidae",
+        "Chamobatidae","Crotoniidae","Damaeidae","Eremaeidae","Euzetidae",
+        "Humerobatidae","Hydrozetidae","Liacaridae","Nothridae","Oribatellidae",
+        "Peloppiidae","Phthiracaridae",
+    ],
+    "Mesostigmata": [
+        "Ascidae","Blattisociidae","Halolaelapidae","Laelapidae","Macrochelidae",
+        "Melicharidae","Parasitidae","Phytoseiidae",
+    ],
+    "Trombidiformes": [
+        "Anystidae","Bdellidae","Calyptostomatidae","Erythraeidae","Eupodidae",
+        "Hygrobatidae","Labidostommatidae","Microtrombidiidae","Pionidae",
+        "Scutacaridae","Sperchontidae","Trombidiidae","Unionicolidae",
+    ],
+    "Psocodea": [
+        "Amphipsocidae","Caeciliusidae","Ectopsocidae","Elipsocidae",
+        "Lachesillidae","Liposcelididae","Mesopsocidae","Paracaeciliidae",
+        "Peripsocidae","Philotarsidae","Psocidae","Stenopsocidae",
+        "Trichopsocidae","Trogiidae",
+    ],
+    "Thysanoptera": [
+        "Aeolothripidae","Melanthripidae","Phlaeothripidae","Thripidae",
+    ],
+    "Entomobryomorpha": [
+        "Entomobryidae","Isotomidae","Lepidocyrtidae","Orchesellidae","Tomoceridae",
+    ],
+    "Symphypleona": [
+        "Bourletiellidae","Dicyrtomidae","Katiannidae","Sminthuridae","Sminthurididae",
+    ],
+    "Poduromorpha": [
+        "Hypogastruridae","Neanuridae","Onychiuridae",
+    ],
+    "Opiliones": [
+        "Nemastomatidae","Phalangiidae","Sclerosomatidae",
+    ],
+    "Isopoda": [
+        "Armadillidiidae","Philosciidae","Porcellionidae","Trichoniscidae",
+    ],
+    "Amphipoda": [
+        "Arcitalitridae","Gammaridae","Talitridae",
+    ],
+    "Dermaptera": [
+        "Forficulidae","Spongiphoridae",
+    ],
+    "Blattodea": [
+        "Ectobiidae",
+    ],
+    "Strepsiptera": [
+        "Elenchidae","Halictophagidae",
+    ],
+    "Megaloptera": [
+        "Sialidae",
+    ],
+    "Mecoptera": [
+        "Panorpidae",
+    ],
+    "Raphidioptera": [
+        "Raphidiidae",
+    ],
+    "Mantodea": [
+        "Mantidae",
+    ],
+    "Pseudoscorpiones": [
+        "Chthoniidae","Neobisiidae",
+    ],
+    "Ixodida": [
+        "Ixodidae",
+    ],
+    "Julida": [
+        "Julidae","Nemasomatidae",
+    ],
+    "Polydesmida": [
+        "Polydesmidae",
+    ],
+    "Polyxenida": [
+        "Polyxenidae",
+    ],
+    "Glomerida": [
+        "Glomeridae",
+    ],
+    "Geophilomorpha": [
+        "Schendylidae",
+    ],
+    "Balanomorpha": [
+        "Balanidae","Elminiidae",
+    ],
+    "Amphipoda": [
+        "Arcitalitridae","Gammaridae","Talitridae",
+    ],
+    "Calanoida": [
+        "Acartiidae",
+    ],
+    "Mysida": [
+        "Mysidae",
+    ],
+    "Rhabditida": [
+        "Sphaerulariidae",
     ],
 }
 
 ORDER_ICONS = {
-    "Diptera":       "🦟",
-    "Hymenoptera":   "🐝",
-    "Coleoptera":    "🪲",
-    "Lepidoptera":   "🦋",
-    "Hemiptera":     "🪳",
-    "Neuroptera":    "✨",
-    "Trichoptera":   "🪲",
-    "Ephemeroptera": "🪲",
-    "Plecoptera":    "🪲",
-    "Odonata":       "🦗",
-    "Orthoptera":    "🦗",
-    "Araneae":       "🕷️",
-    "Other":         "🪲",
+    "Diptera":           "🦟",
+    "Hymenoptera":       "🐝",
+    "Coleoptera":        "🪲",
+    "Lepidoptera":       "🦋",
+    "Hemiptera":         "🪳",
+    "Neuroptera":        "✨",
+    "Trichoptera":       "🪲",
+    "Ephemeroptera":     "🪲",
+    "Plecoptera":        "🪲",
+    "Odonata":           "🦗",
+    "Orthoptera":        "🦗",
+    "Araneae":           "🕷️",
+    "Sarcoptiformes":    "🕷️",
+    "Mesostigmata":      "🕷️",
+    "Trombidiformes":    "🕷️",
+    "Psocodea":          "🪲",
+    "Thysanoptera":      "🌿",
+    "Entomobryomorpha":  "🦗",
+    "Symphypleona":      "🦗",
+    "Poduromorpha":      "🦗",
+    "Opiliones":         "🕷️",
+    "Isopoda":           "🦐",
+    "Amphipoda":         "🦐",
+    "Dermaptera":        "🪲",
+    "Blattodea":         "🪳",
+    "Strepsiptera":      "🪲",
+    "Megaloptera":       "🪲",
+    "Mecoptera":         "🪲",
+    "Raphidioptera":     "🪲",
+    "Mantodea":          "🪲",
+    "Pseudoscorpiones":  "🦂",
+    "Ixodida":           "🕷️",
+    "Julida":            "🐛",
+    "Polydesmida":       "🐛",
+    "Polyxenida":        "🐛",
+    "Glomerida":         "🐛",
+    "Geophilomorpha":    "🐛",
+    "Balanomorpha":      "🦐",
+    "Calanoida":         "🦐",
+    "Mysida":            "🦐",
+    "Rhabditida":        "🪱",
+    "Other":             "🪲",
 }
 
 FAMILY_TO_ORDER = {
@@ -155,11 +307,34 @@ FAMILY_TO_ORDER = {
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+GLOBAL_FAMILY = "Arthropoda_global"
+GLOBAL_DIR    = DATA_DIR / GLOBAL_FAMILY
+
+
 def raw_url(path: str) -> str:
     return (
         f"https://raw.githubusercontent.com/{GITHUB_USER}/{GITHUB_REPO}"
         f"/{GITHUB_BRANCH}/{path}"
     )
+
+
+def detect_global_tree():
+    """Return the Taxonium URL for the global Arthropoda tree, or None if the
+    expected files are not present in data/Arthropoda_global/."""
+    meta = GLOBAL_DIR / "arthropoda_global_metadata_FINAL.tsv"
+    if not meta.exists():
+        return None
+    # Prefer .tre (Nexus) but fall back to .newick
+    for ext in ("tre", "newick"):
+        tree = GLOBAL_DIR / f"{GLOBAL_FAMILY}_final_tree.{ext}"
+        if tree.exists():
+            params = urllib.parse.urlencode({
+                "treeUrl":   raw_url(f"data/{GLOBAL_FAMILY}/{GLOBAL_FAMILY}_final_tree.{ext}"),
+                "metaUrl":   raw_url(f"data/{GLOBAL_FAMILY}/arthropoda_global_metadata_FINAL.tsv"),
+                "configUrl": raw_url(CONFIG_FILE),
+            })
+            return f"https://taxonium.org/?{params}"
+    return None
 
 
 def taxonium_url(family: str) -> str:
@@ -181,6 +356,8 @@ def scan_families():
         if not subdir.is_dir():
             continue
         fam = subdir.name
+        if fam == GLOBAL_FAMILY:   # handled separately — see detect_global_tree()
+            continue
         tree = subdir / f"{fam}_final_tree.newick"
         meta = subdir / f"{fam.lower()}_metadata_FINAL.tsv"
         if tree.exists() and meta.exists():
@@ -195,7 +372,7 @@ def scan_families():
 # ---------------------------------------------------------------------------
 # HTML generation
 # ---------------------------------------------------------------------------
-def build_html(families: list) -> str:
+def build_html(families: list, global_url=None) -> str:
     by_order: dict = {}
     for f in families:
         by_order.setdefault(f["order"], []).append(f["family"])
@@ -248,6 +425,22 @@ def build_html(families: list) -> str:
 
     no_results_style = "display:none" if families else "display:block"
 
+    if global_url:
+        global_banner_html = f"""<div class="global-tree-banner">
+  <div class="global-tree-info">
+    <span class="global-tree-icon">🌍</span>
+    <div>
+      <strong>All Arthropoda — Global Overview</strong>
+      <p>Higher-taxonomy tree spanning all families worldwide</p>
+    </div>
+  </div>
+  <a href="{global_url}" target="_blank" rel="noopener" class="global-tree-btn">
+    Open in Taxonium ↗
+  </a>
+</div>"""
+    else:
+        global_banner_html = ""
+
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -295,8 +488,6 @@ def build_html(families: list) -> str:
 
     /* ── Content sections (below header) ────────────────────────── */
     .content-sections {{
-      background: #fff;
-      border-bottom: 1px solid #e2e8f0;
       padding: 2rem 2rem 0.5rem;
     }}
     .scientific-context,
@@ -463,8 +654,6 @@ def build_html(families: list) -> str:
 
     /* ── Tree container ──────────────────────────────────────────── */
     .tree-container {{
-      max-width: 860px;
-      margin: 1.5rem auto;
       padding: 0 1.5rem 3rem;
     }}
 
@@ -555,10 +744,89 @@ def build_html(families: list) -> str:
       {no_results_style};
     }}
 
+    /* ── Global Arthropoda banner ────────────────────────────────── */
+    .global-tree-banner {{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      padding: 0.9rem 1.25rem;
+      background: linear-gradient(135deg, #1a365d 0%, #2a6049 100%);
+      color: #fff;
+    }}
+    .global-tree-info {{
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+    }}
+    .global-tree-icon {{ font-size: 1.6rem; line-height: 1; }}
+    .global-tree-info strong {{
+      display: block;
+      font-size: 0.92rem;
+      font-weight: 700;
+    }}
+    .global-tree-info p {{
+      font-size: 0.78rem;
+      opacity: 0.85;
+      margin: 0.1rem 0 0;
+    }}
+    .global-tree-btn {{
+      display: inline-block;
+      padding: 0.4rem 0.9rem;
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border-radius: 6px;
+      text-decoration: none;
+      border: 1px solid rgba(255,255,255,0.3);
+      white-space: nowrap;
+      transition: background 0.15s;
+    }}
+    .global-tree-btn:hover {{ background: rgba(255,255,255,0.28); }}
+
     /* ── Hidden by collapse / search ────────────────────────────── */
     .order-block.collapsed .family-list {{ display: none; }}
     .family-item.hidden {{ display: none; }}
     .order-block.all-hidden {{ display: none; }}
+
+    /* ── Two-panel layout ────────────────────────────────────────── */
+    .page-body {{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: start;
+      min-height: calc(100vh - 140px);
+    }}
+    .left-panel {{
+      background: #fff;
+      border-right: 2px solid #e2e8f0;
+      overflow-y: auto;
+    }}
+    .right-panel {{
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      background: #f4f6f9;
+    }}
+    .right-panel .stats {{
+      border-bottom: 1px solid #e2e8f0;
+      background: #fff;
+    }}
+    .right-panel .search-bar {{
+      background: #fff;
+      border-bottom: 1px solid #e2e8f0;
+    }}
+    @media (max-width: 900px) {{
+      .page-body {{
+        grid-template-columns: 1fr;
+      }}
+      .right-panel {{
+        position: static;
+        height: auto;
+      }}
+    }}
   </style>
 </head>
 <body>
@@ -574,6 +842,8 @@ def build_html(families: list) -> str:
   </p>
 </header>
 
+<div class="page-body">
+<div class="left-panel">
 <div class="content-sections">
 
   <div class="scientific-context">
@@ -669,7 +939,10 @@ def build_html(families: list) -> str:
   </div>
 
 </div>
+</div><!-- end left-panel -->
 
+<div class="right-panel">
+{global_banner_html}
 <div class="stats">
   <div class="stat">
     <span class="stat-value">{n_families}</span>
@@ -693,6 +966,8 @@ def build_html(families: list) -> str:
 {orders_html}
   <div id="no-results">No families match your search.</div>
 </div>
+</div><!-- end right-panel -->
+</div><!-- end page-body -->
 
 <script>
   function toggleOrder(btn) {{
@@ -737,10 +1012,13 @@ def build_html(families: list) -> str:
 # Entry point
 # ---------------------------------------------------------------------------
 if __name__ == "__main__":
-    families = scan_families()
-    html     = build_html(families)
+    families   = scan_families()
+    global_url = detect_global_tree()
+    html       = build_html(families, global_url)
     OUTPUT_FILE.write_text(html, encoding="utf-8")
 
     print(f"Generated {OUTPUT_FILE} with {len(families)} families")
+    if global_url:
+        print("  [global]         Arthropoda_global")
     for f in families:
         print(f"  {f['order']:15s}  {f['family']}")
