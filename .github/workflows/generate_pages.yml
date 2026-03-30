@@ -1,7 +1,8 @@
 name: Generate Taxonium Index
 
-# Runs whenever tree/metadata files are added to data/ or config changes.
-# Re-generates index.html and commits it back to main.
+# Runs whenever tree/metadata files are added to data/ or config/scripts change.
+# 1. Re-enriches the global Arthropoda metadata (in_uk, in_dataset, taxonium_link).
+# 2. Re-generates index.html and commits both files back to main.
 # GitHub Pages must be enabled: Settings → Pages → Source: main branch / root.
 
 on:
@@ -10,6 +11,8 @@ on:
     paths:
       - "data/**"
       - "config.json"
+      - "generate_index.py"
+      - "add_global_columns.py"
   workflow_dispatch:   # allow manual trigger from Actions tab
 
 jobs:
@@ -27,11 +30,19 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Update global Arthropoda metadata columns
+        run: |
+          if [ -f "data/Arthropoda_global/arthropoda_global_metadata_FINAL.tsv" ]; then
+            python add_global_columns.py
+          else
+            echo "No global metadata file found — skipping add_global_columns.py"
+          fi
+
       - name: Generate index.html
         run: python generate_index.py
 
-      - name: Commit updated index.html
+      - name: Commit updated files
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "Auto-generate index.html [skip ci]"
-          file_pattern: index.html
+          file_pattern: index.html data/Arthropoda_global/arthropoda_global_metadata_FINAL.tsv
