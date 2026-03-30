@@ -227,10 +227,22 @@ for FAMILY in "${FAMILIES[@]}"; do
         done
     fi
 
-    # Place output files and commit
-    mkdir -p "$DATA_DIR"
-    cp "$TMPOUT/"* "$DATA_DIR/" 2>/dev/null || true
-    rm -rf "$TMPOUT"
+    if ! git checkout "$MAIN_BRANCH" 2>/dev/null; then
+        log "WARNING: could not checkout $MAIN_BRANCH for $FAMILY — restoring state"
+        git stash pop 2>/dev/null || true
+        git update-index --skip-worktree scripts/run_family_pipeline.sh
+        skip "$FAMILY — failed to switch to $MAIN_BRANCH (data files safe in $DATA_DIR)"
+        continue
+    fi
+
+    # Pull with rebase, auto-resolving index.html conflicts
+    if ! git pull --rebase origin "$MAIN_BRANCH" 2>/dev/null; then
+        while git status 2>/dev/null | grep -qE "rebase in progress|REBASE_HEAD"; do
+            git checkout --ours index.html 2>/dev/null || true
+            git add index.html 2>/dev/null || true
+            git rebase --continue 2>/dev/null || git rebase --skip 2>/dev/null || break
+        done
+    fi
 
     git add "$DATA_DIR/"
     if git diff --cached --quiet; then
