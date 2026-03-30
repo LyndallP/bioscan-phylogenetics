@@ -329,9 +329,8 @@ def detect_global_tree():
         tree = GLOBAL_DIR / f"{GLOBAL_FAMILY}_final_tree.{ext}"
         if tree.exists():
             params = urllib.parse.urlencode({
-                "treeUrl":   raw_url(f"data/{GLOBAL_FAMILY}/{GLOBAL_FAMILY}_final_tree.{ext}"),
-                "metaUrl":   raw_url(f"data/{GLOBAL_FAMILY}/arthropoda_global_metadata_FINAL.tsv"),
-                "configUrl": raw_url(CONFIG_FILE),
+                "treeUrl": raw_url(f"data/{GLOBAL_FAMILY}/{GLOBAL_FAMILY}_final_tree.{ext}"),
+                "metaUrl": raw_url(f"data/{GLOBAL_FAMILY}/arthropoda_global_metadata_FINAL.tsv"),
             })
             return f"https://taxonium.org/?{params}"
     return None
