@@ -1,6 +1,6 @@
 {
   "title": "UK BIOSCAN Phylogenetics",
-  "defaultColorByField": "meta_bags_grade",
+  "defaultColorByField": "meta_dataset",
   "customNames": {
     "meta_bags_grade": "BAGS Grade",
     "meta_placement_quality": "Placement Quality",
@@ -82,18 +82,18 @@
   ],
   "colorBy": {
     "colorByOptions": [
-      "meta_bags_grade",
+      "meta_dataset",
       "meta_category",
+      "meta_placement_type",
       "meta_placement_quality",
       "meta_Node support / Placement",
-      "meta_subfamily",
-      "meta_family",
+      "meta_bags_grade",
+      "meta_geography",
       "meta_geography_broad",
       "meta_in_uksi",
-      "meta_species",
+      "meta_UKSI_name_match",
       "meta_genus",
-      "meta_needs_attention",
-      "None"
+      "meta_needs_attention"
     ]
   },
   "colorMapping": {
