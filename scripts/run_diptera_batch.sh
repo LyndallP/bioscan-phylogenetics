@@ -199,9 +199,33 @@ for FAMILY in "${FAMILIES[@]}"; do
     # Commit and push to main
     log "Committing $FAMILY to $MAIN_BRANCH..."
 
-    # Stash API key, switch to main
+    # Save output files to temp dir (outside repo) so stash doesn't lose them
+    TMPOUT=$(mktemp -d)
+    [[ -f "$FINAL_TREE" ]] && cp "$FINAL_TREE" "$TMPOUT/"
+    [[ -f "$FINAL_META" ]] && cp "$FINAL_META" "$TMPOUT/"
+
+    # Stash ALL changes (API key + any modified tracked files) so checkout is clean
     git update-index --no-skip-worktree scripts/run_family_pipeline.sh
-    git stash push -m "batch-api-key-stash" -- scripts/run_family_pipeline.sh 2>/dev/null || true
+    git stash push --include-untracked -m "batch-stash" 2>/dev/null || true
+
+    if ! git checkout "$MAIN_BRANCH" 2>/dev/null; then
+        log "WARNING: could not checkout $MAIN_BRANCH for $FAMILY — restoring state"
+        git stash pop 2>/dev/null || true
+        git update-index --skip-worktree scripts/run_family_pipeline.sh
+        rm -rf "$TMPOUT"
+        skip "$FAMILY — failed to switch to $MAIN_BRANCH"
+        continue
+    fi
+
+    # Sync local main with remote (handles GitHub Actions commits between pushes)
+    git fetch origin "$MAIN_BRANCH"
+    if ! git rebase "origin/$MAIN_BRANCH" 2>/dev/null; then
+        while git status 2>/dev/null | grep -qE "rebase in progress|REBASE_HEAD"; do
+            git checkout --ours index.html 2>/dev/null || true
+            git add index.html 2>/dev/null || true
+            git rebase --continue 2>/dev/null || git rebase --skip 2>/dev/null || break
+        done
+    fi
 
     if ! git checkout "$MAIN_BRANCH" 2>/dev/null; then
         log "WARNING: could not checkout $MAIN_BRANCH for $FAMILY — restoring state"
@@ -229,7 +253,7 @@ for FAMILY in "${FAMILIES[@]}"; do
         log "Pushed $FAMILY to $MAIN_BRANCH"
     fi
 
-    # Switch back to feature branch, restore API key
+    # Switch back to feature branch, restore all stashed changes (API key etc.)
     git checkout "$FEATURE_BRANCH"
     git stash pop 2>/dev/null || true
     git update-index --skip-worktree scripts/run_family_pipeline.sh

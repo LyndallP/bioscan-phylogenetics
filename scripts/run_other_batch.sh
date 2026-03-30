@@ -503,12 +503,14 @@ for FAMILY in "${FAMILIES[@]}"; do
         log "WARNING: could not checkout $MAIN_BRANCH for $FAMILY — restoring state"
         git stash pop 2>/dev/null || true
         git update-index --skip-worktree scripts/run_family_pipeline.sh
-        skip "$FAMILY — failed to switch to $MAIN_BRANCH (data files safe in $DATA_DIR)"
+        rm -rf "$TMPOUT"
+        skip "$FAMILY — failed to switch to $MAIN_BRANCH"
         continue
     fi
 
-    # Pull with rebase, auto-resolving index.html conflicts
-    if ! git pull --rebase origin "$MAIN_BRANCH" 2>/dev/null; then
+    # Sync local main with remote (handles GitHub Actions commits between pushes)
+    git fetch origin "$MAIN_BRANCH"
+    if ! git rebase "origin/$MAIN_BRANCH" 2>/dev/null; then
         while git status 2>/dev/null | grep -qE "rebase in progress|REBASE_HEAD"; do
             git checkout --ours index.html 2>/dev/null || true
             git add index.html 2>/dev/null || true

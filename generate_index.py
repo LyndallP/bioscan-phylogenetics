@@ -307,11 +307,34 @@ FAMILY_TO_ORDER = {
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+GLOBAL_FAMILY = "Arthropoda_global"
+GLOBAL_DIR    = DATA_DIR / GLOBAL_FAMILY
+
+
 def raw_url(path: str) -> str:
     return (
         f"https://raw.githubusercontent.com/{GITHUB_USER}/{GITHUB_REPO}"
         f"/{GITHUB_BRANCH}/{path}"
     )
+
+
+def detect_global_tree():
+    """Return the Taxonium URL for the global Arthropoda tree, or None if the
+    expected files are not present in data/Arthropoda_global/."""
+    meta = GLOBAL_DIR / "arthropoda_global_metadata_FINAL.tsv"
+    if not meta.exists():
+        return None
+    # Prefer .tre (Nexus) but fall back to .newick
+    for ext in ("tre", "newick"):
+        tree = GLOBAL_DIR / f"{GLOBAL_FAMILY}_final_tree.{ext}"
+        if tree.exists():
+            params = urllib.parse.urlencode({
+                "treeUrl":   raw_url(f"data/{GLOBAL_FAMILY}/{GLOBAL_FAMILY}_final_tree.{ext}"),
+                "metaUrl":   raw_url(f"data/{GLOBAL_FAMILY}/arthropoda_global_metadata_FINAL.tsv"),
+                "configUrl": raw_url(CONFIG_FILE),
+            })
+            return f"https://taxonium.org/?{params}"
+    return None
 
 
 def taxonium_url(family: str) -> str:
@@ -333,6 +356,8 @@ def scan_families():
         if not subdir.is_dir():
             continue
         fam = subdir.name
+        if fam == GLOBAL_FAMILY:   # handled separately — see detect_global_tree()
+            continue
         tree = subdir / f"{fam}_final_tree.newick"
         meta = subdir / f"{fam.lower()}_metadata_FINAL.tsv"
         if tree.exists() and meta.exists():
@@ -347,7 +372,7 @@ def scan_families():
 # ---------------------------------------------------------------------------
 # HTML generation
 # ---------------------------------------------------------------------------
-def build_html(families: list) -> str:
+def build_html(families: list, global_url=None) -> str:
     by_order: dict = {}
     for f in families:
         by_order.setdefault(f["order"], []).append(f["family"])
@@ -399,6 +424,22 @@ def build_html(families: list) -> str:
     orders_html = "\n".join(order_blocks)
 
     no_results_style = "display:none" if families else "display:block"
+
+    if global_url:
+        global_banner_html = f"""<div class="global-tree-banner">
+  <div class="global-tree-info">
+    <span class="global-tree-icon">🌍</span>
+    <div>
+      <strong>All Arthropoda — Global Overview</strong>
+      <p>Higher-taxonomy tree spanning all families worldwide</p>
+    </div>
+  </div>
+  <a href="{global_url}" target="_blank" rel="noopener" class="global-tree-btn">
+    Open in Taxonium ↗
+  </a>
+</div>"""
+    else:
+        global_banner_html = ""
 
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -703,6 +744,48 @@ def build_html(families: list) -> str:
       {no_results_style};
     }}
 
+    /* ── Global Arthropoda banner ────────────────────────────────── */
+    .global-tree-banner {{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      padding: 0.9rem 1.25rem;
+      background: linear-gradient(135deg, #1a365d 0%, #2a6049 100%);
+      color: #fff;
+    }}
+    .global-tree-info {{
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+    }}
+    .global-tree-icon {{ font-size: 1.6rem; line-height: 1; }}
+    .global-tree-info strong {{
+      display: block;
+      font-size: 0.92rem;
+      font-weight: 700;
+    }}
+    .global-tree-info p {{
+      font-size: 0.78rem;
+      opacity: 0.85;
+      margin: 0.1rem 0 0;
+    }}
+    .global-tree-btn {{
+      display: inline-block;
+      padding: 0.4rem 0.9rem;
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border-radius: 6px;
+      text-decoration: none;
+      border: 1px solid rgba(255,255,255,0.3);
+      white-space: nowrap;
+      transition: background 0.15s;
+    }}
+    .global-tree-btn:hover {{ background: rgba(255,255,255,0.28); }}
+
     /* ── Hidden by collapse / search ────────────────────────────── */
     .order-block.collapsed .family-list {{ display: none; }}
     .family-item.hidden {{ display: none; }}
@@ -859,6 +942,7 @@ def build_html(families: list) -> str:
 </div><!-- end left-panel -->
 
 <div class="right-panel">
+{global_banner_html}
 <div class="stats">
   <div class="stat">
     <span class="stat-value">{n_families}</span>
@@ -928,10 +1012,13 @@ def build_html(families: list) -> str:
 # Entry point
 # ---------------------------------------------------------------------------
 if __name__ == "__main__":
-    families = scan_families()
-    html     = build_html(families)
+    families   = scan_families()
+    global_url = detect_global_tree()
+    html       = build_html(families, global_url)
     OUTPUT_FILE.write_text(html, encoding="utf-8")
 
     print(f"Generated {OUTPUT_FILE} with {len(families)} families")
+    if global_url:
+        print("  [global]         Arthropoda_global")
     for f in families:
         print(f"  {f['order']:15s}  {f['family']}")
