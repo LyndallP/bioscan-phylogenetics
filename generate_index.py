@@ -328,11 +328,14 @@ def detect_global_tree():
     for ext in ("tre", "newick"):
         tree = GLOBAL_DIR / f"{GLOBAL_FAMILY}_final_tree.{ext}"
         if tree.exists():
-            params = urllib.parse.urlencode({
-                "treeUrl": raw_url(f"data/{GLOBAL_FAMILY}/{GLOBAL_FAMILY}_final_tree.{ext}"),
-                "metaUrl": raw_url(f"data/{GLOBAL_FAMILY}/arthropoda_global_metadata_FINAL.tsv"),
-            })
-            return f"https://taxonium.org/?{params}"
+            p: dict = {
+                "treeUrl":      raw_url(f"data/{GLOBAL_FAMILY}/{GLOBAL_FAMILY}_final_tree.{ext}"),
+                "metaUrl":      raw_url(f"data/{GLOBAL_FAMILY}/arthropoda_global_metadata_FINAL.tsv"),
+                "ladderizeTree": "true",
+            }
+            if ext == "tre":
+                p["treeType"] = "nexus"
+            return f"https://taxonium.org/?{urllib.parse.urlencode(p)}"
     return None
 
 
