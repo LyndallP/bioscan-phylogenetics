@@ -835,7 +835,7 @@ def build_html(families: list, global_url=None) -> str:
     <h1>🔬 UK BIOSCAN Phylogenetics</h1>
   </div>
   <p class="subtitle">
-    Phylogenetic placement of UK BIOSCAN insect specimens onto BGE reference trees,
+    Phylogenetic placement of UK BIOSCAN arthropod specimens onto BGE reference trees,
     revealing biodiversity coverage and highlighting species gaps in the UK barcode library.
   </p>
 </header>
@@ -849,9 +849,9 @@ def build_html(families: list, global_url=None) -> str:
     <p>
       The <a href="https://bioscan.tol.sanger.ac.uk/" target="_blank">BIOSCAN UK project</a>
       is systematically collecting and DNA barcoding arthropods across the UK, generating
-      comprehensive COI-5P barcode coverage for British insect diversity. This visualization
+      comprehensive COI-5P barcode coverage for British arthropod diversity. This visualization
       platform places BIOSCAN specimens onto high-quality reference phylogenies from the
-      <strong>Bioscan Genomics Europe (BGE)</strong> project, creating interactive trees that
+      <strong>Biodiversity Genomics Europe (BGE)</strong> project, creating interactive trees that
       span <strong>450+ arthropod families across 40 orders</strong>.
     </p>
     <p>
@@ -901,14 +901,14 @@ def build_html(families: list, global_url=None) -> str:
         <tr><td><code>processid</code></td><td>BOLD process ID (unique specimen identifier)</td><td>Process IDs (e.g., "YARN1707-23")</td></tr>
         <tr><td><code>Specimen ID</code></td><td>BIOSCAN specimen tube ID</td><td>Tube IDs (e.g., "SHAP_062_D11")</td></tr>
         <tr><td><code>category</code></td><td>Specimen source category</td><td><strong>BIOSCAN_collected</strong> = BIOSCAN UK specimen &nbsp;|&nbsp; <strong>UKSI_no_specimens</strong> = UKSI-listed species, no BIOSCAN specimens yet &nbsp;|&nbsp; <strong>Europe_reference</strong> = European reference barcode &nbsp;|&nbsp; <strong>Not_in_UKSI</strong> = Not in UK Species Inventory</td></tr>
-        <tr><td><code>dataset</code></td><td>Data source</td><td><strong>BIOSCAN</strong> | <strong>Reference</strong> | <strong>DTOL</strong></td></tr>
+        <tr><td><code>dataset</code></td><td>Data source</td><td><strong>BIOSCAN</strong> | <strong>Reference</strong> | <strong>DToL</strong></td></tr>
         <tr><td><code>geography</code></td><td>Country of collection</td><td>Country names (e.g., "United Kingdom", "Finland")</td></tr>
         <tr><td><code>geography_broad</code></td><td>Broader geographic region</td><td>"British Isles", "Scandinavia", "Western Europe", etc.</td></tr>
         <tr><td><code>in_uksi</code></td><td>Is species listed in UK Species Inventory?</td><td><strong>True</strong> | <strong>False</strong></td></tr>
         <tr><td><code>UKSI_name_match</code></td><td>Matched name in UKSI (if applicable)</td><td>Species names or blank</td></tr>
         <tr><td><code>Bioscan specimen count</code></td><td>Number of BIOSCAN specimens for this BIN across all families</td><td>Numbers (e.g., "0", "87", "12")</td></tr>
         <tr><td><code>placement_type</code></td><td>How specimen was placed on the tree</td><td><strong>reference_tree</strong> = Part of original reference tree &nbsp;|&nbsp; <strong>validation</strong> = BIOSCAN specimen placed via EPA-ng &nbsp;|&nbsp; <strong>novel</strong> = Novel placement (species not in reference tree)</td></tr>
-        <tr><td><code>placement_quality</code></td><td>Phylogenetic placement confidence</td><td><strong>High</strong> = EPA-ng LWR &ge; 0.90 &nbsp;|&nbsp; <strong>Moderate to Low</strong> = LWR &lt; 0.75</td></tr>
+        <tr><td><code>placement_quality</code></td><td>Phylogenetic placement confidence</td><td><strong>High</strong> = EPA-ng LWR &ge; 0.90 &nbsp;|&nbsp; <strong>Moderate to Low</strong> = LWR &lt; 0.90</td></tr>
         <tr><td><code>epa_lwr_score</code></td><td>EPA-ng likelihood weight ratio (0–1)</td><td>Numerical scores (e.g., "1.0", "0.3367799324")</td></tr>
         <tr><td><code>parent_bootstrap</code></td><td>Bootstrap support for parent node</td><td>Values 0–1 (e.g., "0.92", "1.0")</td></tr>
         <tr><td><code>Node support / Placement</code></td><td>Human-readable placement quality summary</td><td>"High (0.90–1.00)" | "Moderate to Low (0–0.74)" | "No support data" | "Novel placement"</td></tr>

@@ -88,12 +88,21 @@
       "meta_placement_quality",
       "meta_Node support / Placement",
       "meta_bags_grade",
+      "meta_bin_quality_issue",
       "meta_geography",
       "meta_geography_broad",
       "meta_in_uksi",
       "meta_UKSI_name_match",
+      "meta_family",
+      "meta_subfamily",
       "meta_genus",
-      "meta_needs_attention"
+      "meta_species",
+      "meta_needs_attention",
+      "meta_n_bins_for_species",
+      "meta_assembly_status",
+      "meta_genome_status",
+      "meta_species_in_GOAT",
+      "None"
     ]
   },
   "colorMapping": {
