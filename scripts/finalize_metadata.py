@@ -114,7 +114,7 @@ def assign_category(row):
     count = pd.to_numeric(row.get('Bioscan specimen count', 0), errors='coerce') or 0
     uksi  = bool(row.get('in_uksi', False))
     if count > 0:
-        return 'BIOSCAN_collected' if uksi else 'Not_in_UKSI'
+        return 'BIN_collected_in_BIOSCAN' if uksi else 'Not_in_UKSI'
     else:
         return 'UKSI_no_specimens' if uksi else 'Europe_reference'
 

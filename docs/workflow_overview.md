@@ -356,13 +356,13 @@ def get_grade(row):
 def assign_category(row):
     if row['placement_method'] == 'reference_tree':
         if row['bioscan_specimens'] > 0:
-            return 'BIOSCAN_collected'
+            return 'BIN_collected_in_BIOSCAN'
         else:
             return 'Europe_reference'
     else:  # EPA-ng placements
         if row['bioscan_specimens'] > 0:
             if row['in_uksi']:
-                return 'BIOSCAN_collected'
+                return 'BIN_collected_in_BIOSCAN'
             else:
                 return 'Not_in_UKSI'  # ATTENTION NEEDED!
         else:
@@ -373,7 +373,7 @@ def assign_category(row):
 ```
 
 **Categories:**
-- `BIOSCAN_collected`: UK specimens exist
+- `BIN_collected_in_BIOSCAN`: UK specimens exist
 - `Europe_reference`: No UK specimens
 - `Not_in_UKSI`: Has specimens but not in UK species list → **Investigate!**
 - `UKSI_no_specimens`: Known from UK but no specimens
@@ -422,7 +422,7 @@ def describe_bin_issue(row):
 | `name` | Tree tip label | Tree file |
 | `species` | Species name | Parsed from tip |
 | `bold_bin_uri` | BIN identifier | Parsed from tip |
-| `category` | BIOSCAN_collected / Europe_reference / Not_in_UKSI | Logic |
+| `category` | BIN_collected_in_BIOSCAN / Europe_reference / Not_in_UKSI | Logic |
 | `geography` | UK / Europe_or_worldwide | UKSI membership |
 | `placement_method` | reference_tree / EPA-ng / polytomy | Workflow |
 | `placement_quality` | High/Moderate/Low confidence | EPA-ng LWR |
@@ -483,7 +483,7 @@ def describe_bin_issue(row):
 ### Recommended Visualizations
 
 **Color by Category:**
-- 🟢 `BIOSCAN_collected` - UK specimens available
+- 🟢 `BIN_collected_in_BIOSCAN` - UK specimens available
 - ⚫ `Europe_reference` - No UK specimens
 - 🔴 `Not_in_UKSI` - Unexpected UK finds!
 - ⚪ `UKSI_no_specimens` - Known but uncollected
