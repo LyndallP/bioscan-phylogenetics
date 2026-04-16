@@ -903,17 +903,36 @@ def build_html(families: list, global_url=None) -> str:
       See the <a href="https://ukbol.org/species/bold_coi.html?kingdom=Animalia" target="_blank">UKBOL species coverage overview</a>
       for context on which British species have COI barcodes.
     </p>
+    <p class="citation-note">
+      <strong>Code &amp; data:</strong> The pipeline scripts and tree data for this resource are openly available at
+      <a href="https://github.com/{GITHUB_USER}/{GITHUB_REPO}" target="_blank" rel="noopener">github.com/{GITHUB_USER}/{GITHUB_REPO}</a>.
+    </p>
   </div>
 
   <div class="how-to-guide">
     <h2>How to Use These Trees</h2>
     <ol>
-      <li><strong>Click a family name</strong> in the table below to open its interactive tree in Taxonium (opens in new tab).</li>
+      <li><strong>Click a family name</strong> in the tree panel on the right to open its interactive tree in Taxonium (opens in new tab).</li>
       <li><strong>Explore the data:</strong> In Taxonium, use the <em>Color by</em> dropdown to visualize different metadata dimensions—BAGS grades, BIN quality issues, placement confidence, geography, UKSI status, and more.</li>
       <li><strong>Click any tip node</strong> to see full specimen metadata, including direct links to BOLD records, NCBI BLAST searches, GBIF distribution maps, NBN Atlas records, and DToL genome assemblies (where available).</li>
       <li><strong>Use the Search button</strong> (top-right in Taxonium) to find specific specimens, species, BINs, or metadata values. See the searchable terms table below.</li>
       <li><strong>Share your view:</strong> After exploring, copy the browser URL—it encodes the current zoom, coloring, and search state, creating a shareable link that works without file access.</li>
     </ol>
+  </div>
+
+  <div class="how-to-guide">
+    <h2>About Taxonium</h2>
+    <p>
+      These trees are visualised using <a href="https://taxonium.org" target="_blank" rel="noopener"><strong>Taxonium</strong></a>,
+      a web application for exploring large phylogenetic trees in the browser.
+      Find out more at the <a href="https://github.com/theosanderson/taxodium" target="_blank" rel="noopener">Taxonium GitHub repository</a>
+      or read the <a href="https://docs.taxonium.org/" target="_blank" rel="noopener">documentation</a>.
+    </p>
+    <p class="citation-note">
+      <strong>Citation:</strong> Sanderson, T. (2022). Taxonium, a web-based tool for exploring large phylogenetic trees.
+      <em>eLife</em> 11:e82392.
+      <a href="https://doi.org/10.7554/eLife.82392" target="_blank" rel="noopener">https://doi.org/10.7554/eLife.82392</a>
+    </p>
   </div>
 
   <div class="metadata-guide">
