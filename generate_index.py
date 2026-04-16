@@ -324,16 +324,15 @@ def detect_global_tree():
     meta = GLOBAL_DIR / "arthropoda_global_metadata_FINAL.tsv"
     if not meta.exists():
         return None
-    # Prefer .tre (Nexus) but fall back to .newick
-    for ext in ("tre", "newick"):
-        tree = GLOBAL_DIR / f"{GLOBAL_FAMILY}_final_tree.{ext}"
-        if tree.exists():
-            params = urllib.parse.urlencode({
-                "treeUrl": raw_url(f"data/{GLOBAL_FAMILY}/{GLOBAL_FAMILY}_final_tree.{ext}"),
-                "metaUrl": raw_url(f"data/{GLOBAL_FAMILY}/arthropoda_global_metadata_FINAL.tsv"),
-            })
-            return f"https://taxonium.org/?{params}"
-    return None
+    tree = GLOBAL_DIR / f"{GLOBAL_FAMILY}_final_tree.newick"
+    if not tree.exists():
+        return None
+    p = {
+        "treeUrl":       raw_url(f"data/{GLOBAL_FAMILY}/{GLOBAL_FAMILY}_final_tree.newick"),
+        "metaUrl":       raw_url(f"data/{GLOBAL_FAMILY}/arthropoda_global_metadata_FINAL.tsv"),
+        "ladderizeTree": "true",
+    }
+    return f"https://taxonium.org/?{urllib.parse.urlencode(p)}"
 
 
 def taxonium_url(family: str) -> str:
