@@ -88,9 +88,9 @@ for name in tree_tips:
             if lwr >= 0.90:
                 row['placement_quality'] = 'High'
             elif lwr >= 0.75:
-                row['placement_quality'] = 'Good'
+                row['placement_quality'] = 'Moderate'
             else:
-                row['placement_quality'] = 'Moderate to Low'
+                row['placement_quality'] = 'Low'
         else:
             row['placement_type'] = 'reference_tree'
             row['epa_lwr_score'] = ''

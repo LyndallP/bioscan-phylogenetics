@@ -4,8 +4,8 @@ Final metadata updates:
 1. Remove bootstrap_support column (redundant)
 2. Update Node support / Placement categories to:
    - High (0.90-1.00)
-   - Good (0.75-0.89)
-   - Moderate to Low (0-0.74)
+   - Moderate (0.75-0.89)
+   - Low (0-0.74)
 """
 
 import sys
@@ -36,13 +36,13 @@ def create_support_category(row):
     
     For reference tree nodes (bootstrap):
     - High (0.90-1.00): Bootstrap 90-100
-    - Good (0.75-0.89): Bootstrap 75-89
-    - Moderate to Low (0-0.74): Bootstrap 0-74
-    
+    - Moderate (0.75-0.89): Bootstrap 75-89
+    - Low (0-0.74): Bootstrap 0-74
+
     For placed specimens (LWR):
     - High (0.90-1.00): LWR 0.90-1.00
-    - Good (0.75-0.89): LWR 0.75-0.89
-    - Moderate to Low (0-0.74): LWR 0-0.74
+    - Moderate (0.75-0.89): LWR 0.75-0.89
+    - Low (0-0.74): LWR 0-0.74
     
     Special cases:
     - Novel placement (no reference match)
@@ -61,9 +61,9 @@ def create_support_category(row):
         if bs >= 90:
             return 'High (0.90-1.00)'
         elif bs >= 75:
-            return 'Good (0.75-0.89)'
+            return 'Moderate (0.75-0.89)'
         else:
-            return 'Moderate to Low (0-0.74)'
+            return 'Low (0-0.74)'
     
     # Validation placements (BIOSCAN, DTOL) - use LWR
     elif placement_type == 'validation':
@@ -75,9 +75,9 @@ def create_support_category(row):
         if lwr_val >= 0.90:
             return 'High (0.90-1.00)'
         elif lwr_val >= 0.75:
-            return 'Good (0.75-0.89)'
+            return 'Moderate (0.75-0.89)'
         else:
-            return 'Moderate to Low (0-0.74)'
+            return 'Low (0-0.74)'
     
     # Novel placements
     elif placement_type == 'novel':
@@ -131,7 +131,7 @@ print("\n3. Computing needs_attention...")
 
 df['needs_attention'] = (
     (df['category'] == 'Not_in_UKSI') |
-    (df['placement_quality'] == 'Moderate to Low')
+    (df['placement_quality'] == 'Low')
 )
 
 needs_count = df['needs_attention'].sum()
@@ -174,14 +174,14 @@ print("=" * 80)
 
 print("\nReference tree nodes (bootstrap):")
 ref_df = df[df['placement_type'] == 'reference_tree']
-for cat in ['High (0.90-1.00)', 'Good (0.75-0.89)', 'Moderate to Low (0-0.74)', 'No support data']:
+for cat in ['High (0.90-1.00)', 'Moderate (0.75-0.89)', 'Low (0-0.74)', 'No support data']:
     count = (ref_df['Node support / Placement'] == cat).sum()
     if count > 0:
         print(f"  {cat}: {count:,}")
 
 print("\nPlaced specimens - BIOSCAN/DTOL (LWR):")
 placed_df = df[df['placement_type'] == 'validation']
-for cat in ['High (0.90-1.00)', 'Good (0.75-0.89)', 'Moderate to Low (0-0.74)', 'No support data']:
+for cat in ['High (0.90-1.00)', 'Moderate (0.75-0.89)', 'Low (0-0.74)', 'No support data']:
     count = (placed_df['Node support / Placement'] == cat).sum()
     if count > 0:
         print(f"  {cat}: {count:,}")
@@ -207,13 +207,13 @@ print("\nColor by support:")
 print("  Color by → Node support / Placement")
 print("  Colors:")
 print("    • High (0.90-1.00) - Strong confidence")
-print("    • Good (0.75-0.89) - Good confidence")
-print("    • Moderate to Low (0-0.74) - Needs review")
+print("    • Moderate (0.75-0.89) - Moderate confidence")
+print("    • Low (0-0.74) - Needs review")
 print("    • Novel placement - Unique specimens")
 
 print("\nSearch examples:")
 print("  Node support / Placement:High")
-print("  Node support / Placement:Moderate to Low")
+print("  Node support / Placement:Low")
 print("  Node support / Placement:Novel placement")
 
 print(f"\n✓ Saved to: {output_file}")
