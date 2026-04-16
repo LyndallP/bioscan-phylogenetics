@@ -362,7 +362,7 @@ python scripts/finalize_metadata.py \
 | `species` | 7 | Parsed from tip label |
 | `ThumbnailURL` | 12 | BOLD CAOS API image URL |
 | `bin` | 7 | BOLD BIN identifier |
-| `category` | 15 | `BIOSCAN_collected`, `Not_in_UKSI`, `UKSI_no_specimens`, `Europe_reference`, `DTOL` — computed in finalize from `in_uksi` + `Bioscan specimen count` |
+| `category` | 15 | `BIN_collected_in_BIOSCAN`, `Not_in_UKSI`, `UKSI_no_specimens`, `Europe_reference`, `DTOL` — computed in finalize from `in_uksi` + `Bioscan specimen count` |
 | `placement_type` | 7 | `reference_tree` / `validation` / `novel` / `dtol` / `polytomy` |
 | `placement_interpretation` | 7 | Placeholder — populated manually post-analysis |
 | `epa_lwr_score` | 7 | EPA-ng likelihood weight ratio (placed specimens only) |
