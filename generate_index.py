@@ -429,7 +429,7 @@ def build_html(families: list, global_url=None) -> str:
     <span class="global-tree-icon">🌍</span>
     <div>
       <strong>All Arthropoda — Global Overview</strong>
-      <p>Higher-taxonomy tree spanning all families worldwide</p>
+      <p>3,264-family synthesis tree &middot; <a href="https://doi.org/10.5281/zenodo.19195926" target="_blank" rel="noopener" style="color:rgba(255,255,255,0.8);text-decoration:underline;">Alhalabi (2026)</a></p>
     </div>
   </div>
   <a href="{global_url}" target="_blank" rel="noopener" class="global-tree-btn">
@@ -520,6 +520,13 @@ def build_html(families: list, global_url=None) -> str:
     }}
     .scientific-context p:last-child,
     .metadata-guide p:last-child {{ margin-bottom: 0; }}
+    .citation-note {{
+      background: #eef2f7;
+      border-left: 3px solid #718096;
+      padding: 0.6rem 0.9rem;
+      border-radius: 0 4px 4px 0;
+      font-size: 0.88rem !important;
+    }}
     .scientific-context a,
     .how-to-guide a,
     .metadata-guide a {{
@@ -859,6 +866,27 @@ def build_html(families: list, global_url=None) -> str:
       barcodes, <strong>Darwin Tree of Life (DToL) genome assemblies</strong>, and UK Species
       Inventory (UKSI) taxonomy. The modular design allows new datasets—such as genome-sequenced
       specimens or regional barcode initiatives—to be seamlessly added to existing trees.
+    </p>
+    <h3>Global Arthropoda Overview Tree</h3>
+    <p>
+      In addition to the per-family barcode trees, this resource includes a
+      <strong>family-level synthesis phylogeny spanning all 3,264 extant families of
+      Panarthropoda</strong>. This global tree provides taxonomic context for the
+      per-family BIOSCAN trees, showing where each family sits within the broader
+      arthropod tree of life and which families have been processed so far.
+    </p>
+    <p>
+      The global tree is based on the synthesis phylogeny of
+      <a href="https://doi.org/10.5281/zenodo.19195926" target="_blank">Alhalabi (2026)</a>,
+      constructed manually in Treegraph2 from 219 phylogenetic and taxonomic sources.
+      Families present in the UK BIOSCAN dataset are highlighted; clicking the
+      <em>Open in Taxonium</em> button at the top of the tree panel loads the global
+      tree with per-family metadata (including UK presence and dataset status).
+    </p>
+    <p class="citation-note">
+      <strong>Citation:</strong> Alhalabi, A. (2026). <em>Family Level Synthesis Phylogeny
+      of Extant Arthropoda and Related Phyla</em> (Version 7) [Dataset]. Zenodo.
+      <a href="https://doi.org/10.5281/zenodo.19195926" target="_blank">https://doi.org/10.5281/zenodo.19195926</a>
     </p>
     <h3>Why This Matters</h3>
     <p>
