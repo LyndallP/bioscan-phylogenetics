@@ -402,6 +402,20 @@ python scripts/finalize_metadata.py \
 
 ---
 
+## "Unknown_species" vs "Unidentified" in tip names and metadata
+
+These two terms appear in different fields for a reason:
+
+- **Tip names** (Newick format) use `Unknown_species` — Newick does not allow
+  spaces in labels, and the term originates from BOLD's export convention.
+- **`species` column** (metadata) uses `Unidentified` — the standard taxonomic
+  designation for specimens not identified to species level.
+
+Both terms refer to the same situation: no species-level identification is
+available. When searching in Taxonium, use `species:Unidentified`.
+
+---
+
 ## Data file not in repo
 
 `filtered_gap_analysis.csv` — Full arthropod UKSI gap analysis (too large for git).
